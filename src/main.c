@@ -31,6 +31,7 @@
 #include "load_gfx.h"
 #include "util.h"
 #include "audio.h"
+#include "third_party/stb/stb_image.h"
 
 static bool g_run_without_emu = 0;
 
@@ -41,6 +42,9 @@ static void RenderNumber(uint8 *dst, size_t pitch, int n, bool big);
 static void RenderText(uint8 *dst, size_t pitch, int width, int height, int scale, const char *text);
 static void RenderTextAt(uint8 *dst, size_t pitch, int width, int height, int scale, const char *text, int x, int y, uint32 background, uint32 foreground);
 static void FillRectNative(uint8 *dst, size_t pitch, int width, int height, int scale, int x, int y, int rect_width, int rect_height, uint32 color);
+static void DrawStartupBackground(uint8 *pixels, size_t pitch, int width, int height, int opacity);
+static void BlendRectNative(uint8 *pixels, size_t pitch, int width, int height, int scale,
+                            int x, int y, int rect_width, int rect_height, uint32 color, int opacity);
 static void HandleInput(int keyCode, int modCode, bool pressed);
 static void HandleCommand(uint32 j, bool pressed);
 static int RemapSdlButton(int button);
@@ -71,6 +75,7 @@ static void SetGraphicsMenuOpen(bool open);
 const char *OpenGLRenderer_HandleShaderCommand(uint32 command);
 bool OpenGLRenderer_CanRenderMode7Gpu();
 void OpenGLRenderer_SetMode7Frame(Ppu *ppu);
+void OpenGLRenderer_SetStartupPresentation(bool enabled);
 
 enum {
   kDefaultFullscreen = 0,
@@ -113,7 +118,15 @@ static char g_shader_status[128];
 static uint16 g_shader_status_frames;
 static int g_ppu_render_flags = 0;
 static int g_snes_width, g_snes_height;
+static int g_startup_canvas_width, g_startup_canvas_height;
+static int g_startup_layout_width, g_startup_layout_height, g_startup_canvas_scale = 1;
+static bool g_startup_canvas_active, g_startup_canvas_fallback;
+static int g_startup_saved_logical_width, g_startup_saved_logical_height;
+static int g_startup_window_width, g_startup_window_height;
+static SDL_bool g_startup_saved_integer_scale;
 static int g_sdl_audio_mixer_volume = SDL_MIX_MAXVOLUME;
+static SDL_AudioDeviceID g_startup_audio_device;
+static int g_startup_audio_frequency, g_startup_audio_channels;
 static struct RendererFuncs g_renderer_funcs;
 static uint32 g_gamepad_modifiers;
 static uint16 g_gamepad_last_cmd[kGamepadBtn_Count];
@@ -373,11 +386,51 @@ static void SdlRenderer_Destroy() {
   SDL_DestroyRenderer(g_renderer);
 }
 
+static void SdlRendererRestoreGameTexture(void) {
+  if (!g_renderer || !g_texture)
+    return;
+  int texture_scale = (g_ppu_render_flags & kPpuRenderFlags_4x4Mode7) ? 4 : 1;
+  int width = g_snes_width * texture_scale;
+  int height = g_snes_height * texture_scale;
+  int current_width = 0, current_height = 0;
+  SDL_QueryTexture(g_texture, NULL, NULL, &current_width, &current_height);
+  if (current_width == width && current_height == height)
+    return;
+  SDL_Texture *texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888,
+                                           SDL_TEXTUREACCESS_STREAMING, width, height);
+  if (!texture) {
+    fprintf(stderr, "Warning: unable to restore compact game texture: %s\n", SDL_GetError());
+    return;
+  }
+  SDL_DestroyTexture(g_texture);
+  g_texture = texture;
+}
+
 static void SdlRenderer_BeginDraw(int width, int height, uint8 **pixels, int *pitch) {
+  *pixels = NULL;
+  *pitch = 0;
+  int texture_width = 0, texture_height = 0;
+  if (g_texture == NULL || SDL_QueryTexture(g_texture, NULL, NULL, &texture_width, &texture_height) != 0) {
+    printf("Failed to query texture: %s\n", SDL_GetError());
+    return;
+  }
+  if (width > texture_width || height > texture_height) {
+    SDL_Texture *texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888,
+                                             SDL_TEXTUREACCESS_STREAMING, width, height);
+    if (texture == NULL) {
+      printf("Failed to resize texture: %s\n", SDL_GetError());
+      return;
+    }
+    SDL_DestroyTexture(g_texture);
+    g_texture = texture;
+  }
+  g_sdl_renderer_rect.x = g_sdl_renderer_rect.y = 0;
   g_sdl_renderer_rect.w = width;
   g_sdl_renderer_rect.h = height;
   if (SDL_LockTexture(g_texture, &g_sdl_renderer_rect, (void **)pixels, pitch) != 0) {
     printf("Failed to lock texture: %s\n", SDL_GetError());
+    *pixels = NULL;
+    *pitch = 0;
     return;
   }
 }
@@ -401,97 +454,269 @@ static const struct RendererFuncs kSdlRendererFuncs  = {
   &SdlRenderer_EndDraw,
 };
 
+static void StartupCanvasUpdate(SDL_Window *window) {
+  if (!g_startup_canvas_active || g_startup_canvas_fallback)
+    return;
+
+  int width = 0, height = 0;
+  if (g_config.output_method == kOutputMethod_OpenGL ||
+      g_config.output_method == kOutputMethod_OpenGL_ES) {
+    SDL_GL_GetDrawableSize(window, &width, &height);
+  } else {
+    SDL_GetRendererOutputSize(g_renderer, &width, &height);
+  }
+  if (width <= 0 || height <= 0)
+    SDL_GetWindowSize(window, &width, &height);
+  if (width <= 0 || height <= 0)
+    return;
+
+  g_startup_canvas_width = width;
+  g_startup_canvas_height = height;
+  g_startup_canvas_scale = IntMax(IntMin(width / g_snes_width, height / g_snes_height), 1);
+  g_startup_layout_width = IntMax(width / g_startup_canvas_scale, 1);
+  g_startup_layout_height = IntMax(height / g_startup_canvas_scale, 1);
+
+  if (g_renderer && g_startup_saved_logical_width > 0 && g_startup_saved_logical_height > 0) {
+    int window_width, window_height;
+    SDL_GetWindowSize(window, &window_width, &window_height);
+    if (window_width > 0 && window_height > 0 &&
+        (window_width != g_startup_window_width || window_height != g_startup_window_height)) {
+      if (SDL_RenderSetLogicalSize(g_renderer, window_width, window_height) != 0)
+        fprintf(stderr, "Warning: unable to resize startup logical canvas: %s\n", SDL_GetError());
+      g_startup_window_width = window_width;
+      g_startup_window_height = window_height;
+    }
+  }
+}
+
+static void StartupCanvasEnter(SDL_Window *window) {
+  g_startup_canvas_active = true;
+  g_startup_canvas_fallback = false;
+  g_startup_saved_logical_width = 0;
+  g_startup_saved_logical_height = 0;
+  g_startup_window_width = 0;
+  g_startup_window_height = 0;
+
+  if (g_renderer) {
+    SDL_RenderGetLogicalSize(g_renderer, &g_startup_saved_logical_width, &g_startup_saved_logical_height);
+    g_startup_saved_integer_scale = SDL_RenderGetIntegerScale(g_renderer);
+    if (g_startup_saved_logical_width > 0 && g_startup_saved_logical_height > 0)
+      SDL_RenderSetIntegerScale(g_renderer, SDL_FALSE);
+  } else {
+    OpenGLRenderer_SetStartupPresentation(true);
+  }
+  StartupCanvasUpdate(window);
+}
+
+static void StartupCanvasLeave(void) {
+  g_startup_canvas_active = false;
+  g_startup_canvas_fallback = false;
+  if (g_renderer) {
+    if (g_startup_saved_logical_width > 0 && g_startup_saved_logical_height > 0)
+      SDL_RenderSetLogicalSize(g_renderer, g_startup_saved_logical_width, g_startup_saved_logical_height);
+    SDL_RenderSetIntegerScale(g_renderer, g_startup_saved_integer_scale);
+    SdlRendererRestoreGameTexture();
+  } else {
+    OpenGLRenderer_SetStartupPresentation(false);
+  }
+  g_startup_canvas_width = g_startup_layout_width = g_snes_width;
+  g_startup_canvas_height = g_startup_layout_height = g_snes_height;
+  g_startup_canvas_scale = 1;
+}
+
+static bool StartupBeginDraw(uint8 **pixels, int *pitch) {
+  *pixels = NULL;
+  *pitch = 0;
+  g_renderer_funcs.BeginDraw(g_startup_canvas_width, g_startup_canvas_height, pixels, pitch);
+  if (*pixels)
+    return true;
+
+  if (g_startup_canvas_width == g_snes_width && g_startup_canvas_height == g_snes_height)
+    return false;
+
+  fprintf(stderr, "Warning: startup canvas allocation failed; using native resolution.\n");
+  g_startup_canvas_fallback = true;
+  g_startup_canvas_width = g_startup_layout_width = g_snes_width;
+  g_startup_canvas_height = g_startup_layout_height = g_snes_height;
+  g_startup_canvas_scale = 1;
+  *pixels = NULL;
+  *pitch = 0;
+  g_renderer_funcs.BeginDraw(g_snes_width, g_snes_height, pixels, pitch);
+  return *pixels != NULL;
+}
+
+enum {
+  kStartupCue_Title,
+  kStartupCue_Reveal,
+  kStartupCue_Move,
+  kStartupCue_Confirm,
+};
+
+static void StartupSfxOpen(void) {
+  if (!g_config.enable_audio)
+    return;
+  SDL_AudioSpec desired = { 0 }, obtained;
+  desired.freq = g_config.audio_freq >= 11025 && g_config.audio_freq <= 48000 ? g_config.audio_freq : kDefaultFreq;
+  desired.format = AUDIO_S16SYS;
+  desired.channels = 2;
+  desired.samples = 512;
+  g_startup_audio_device = SDL_OpenAudioDevice(NULL, 0, &desired, &obtained,
+                                               SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE);
+  if (g_startup_audio_device == 0) {
+    fprintf(stderr, "Warning: startup sound effects are unavailable: %s\n", SDL_GetError());
+    return;
+  }
+  g_startup_audio_frequency = obtained.freq;
+  g_startup_audio_channels = obtained.channels;
+  SDL_PauseAudioDevice(g_startup_audio_device, 0);
+}
+
+static void StartupSfxClose(void) {
+  if (g_startup_audio_device) {
+    uint32 deadline = SDL_GetTicks() + 200;
+    while (SDL_GetQueuedAudioSize(g_startup_audio_device) != 0 && (int32)(deadline - SDL_GetTicks()) > 0)
+      SDL_Delay(5);
+    SDL_ClearQueuedAudio(g_startup_audio_device);
+    SDL_CloseAudioDevice(g_startup_audio_device);
+  }
+  g_startup_audio_device = 0;
+  g_startup_audio_frequency = g_startup_audio_channels = 0;
+}
+
+static void StartupSfxPlay(int cue) {
+  if (!g_startup_audio_device || g_startup_audio_frequency <= 0 || g_startup_audio_channels <= 0)
+    return;
+
+  static const int note_hz[] = { 690, 880, 620, 1040 };
+  static const int duration_ms[] = { 190, 105, 65, 180 };
+  int frame_count = g_startup_audio_frequency * duration_ms[cue] / 1000;
+  size_t sample_count = (size_t)frame_count * g_startup_audio_channels;
+  int16 *samples = malloc(sample_count * sizeof(*samples));
+  if (!samples)
+    return;
+
+  int base_frequency = note_hz[cue];
+  for (int frame = 0; frame < frame_count; frame++) {
+    int frequency = base_frequency;
+    if (cue == kStartupCue_Title)
+      frequency += frame * 300 / IntMax(frame_count, 1);
+    else if (cue == kStartupCue_Reveal)
+      frequency -= frame * 220 / IntMax(frame_count, 1);
+    else if (cue == kStartupCue_Confirm)
+      frequency += frame * 180 / IntMax(frame_count, 1);
+
+    int period = IntMax(g_startup_audio_frequency / IntMax(frequency, 1), 2);
+    int phase = frame % period;
+    int half_period = IntMax(period / 2, 1);
+    int wave = phase < half_period ?
+               -32767 + phase * 65534 / half_period :
+               32767 - (phase - half_period) * 65534 / IntMax(period - half_period, 1);
+    int attack = IntMin(frame * 255 / IntMax(g_startup_audio_frequency / 200, 1), 255);
+    int release = (frame_count - frame) * 255 / IntMax(frame_count, 1);
+    int amplitude = IntMin(attack, release) * 4200 / 255;
+    int16 sample = (int16)(wave * amplitude / 32767);
+    for (int channel = 0; channel < g_startup_audio_channels; channel++)
+      samples[(size_t)frame * g_startup_audio_channels + channel] = sample;
+  }
+
+  if (SDL_GetQueuedAudioSize(g_startup_audio_device) > (uint32)(g_startup_audio_frequency * g_startup_audio_channels / 2))
+    SDL_ClearQueuedAudio(g_startup_audio_device);
+  SDL_QueueAudio(g_startup_audio_device, samples, (uint32)(sample_count * sizeof(*samples)));
+  free(samples);
+}
+
+static void StartupChangeSelection(int *selection, int new_selection) {
+  if (*selection == new_selection)
+    return;
+  *selection = new_selection;
+  StartupSfxPlay(kStartupCue_Move);
+}
+
 void OpenGLRenderer_Create(struct RendererFuncs *funcs, bool use_opengl_es);
 
 enum { kStartupLanguageRowHeight = 18 };
 
 static int StartupLanguageRowsTop(void) {
-  int panel_height = g_snes_height - 18;
-  int panel_top = (g_snes_height - panel_height) / 2;
+  int panel_height = g_startup_layout_height - 18;
+  int panel_top = (g_startup_layout_height - panel_height) / 2;
   return panel_top + 41;
 }
 
-static void DrawStartupTriforce(uint8 *pixels, size_t pitch, int width, int height, int x, int y) {
-  const uint32 gold = 0xffffd65a;
-  const int size = 8;
-  for (int row = 0; row < size; row++) {
-    int span = row * 2 + 1;
-    FillRectNative(pixels, pitch, width, height, 1, x + 14 - row, y + row, span, 1, gold);
-    FillRectNative(pixels, pitch, width, height, 1, x + 7 - row, y + size + row, span, 1, gold);
-    FillRectNative(pixels, pitch, width, height, 1, x + 21 - row, y + size + row, span, 1, gold);
-  }
+static void StartupFillRect(uint8 *pixels, size_t pitch, int width, int height,
+                            int x, int y, int rect_width, int rect_height, uint32 color) {
+  FillRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                 x, y, rect_width, rect_height, color);
+}
+
+static void StartupText(uint8 *pixels, size_t pitch, int width, int height,
+                        const char *text, int x, int y, uint32 color) {
+  RenderTextAt(pixels, pitch, width, height, g_startup_canvas_scale, text,
+               x, y, 0, color);
 }
 
 static void DrawStartupLanguageScreen(int selected, int saved_selection, const char *const *labels,
                                       const char *const *descriptions, int language_count) {
-  const int width = g_snes_width;
-  const int height = g_snes_height;
-  const uint32 background = 0xff081318;
+  const int width = g_startup_canvas_width;
+  const int height = g_startup_canvas_height;
+  const int layout_width = g_startup_layout_width;
+  const int layout_height = g_startup_layout_height;
   const uint32 panel = 0xff10251f;
   const uint32 gold = 0xffc8a54a;
   const uint32 bright_gold = 0xffffdc78;
   const uint32 cream = 0xffeee6c8;
   const uint32 muted = 0xffa3b3a0;
-  const int panel_width = IntMin(width - 20, 400);
-  const int panel_height = height - 18;
-  const int left = (width - panel_width) / 2;
-  const int top = (height - panel_height) / 2;
+  const int panel_width = IntMin(layout_width - 36, 360);
+  const int panel_height = layout_height - 32;
+  const int left = (layout_width - panel_width) / 2;
+  const int top = (layout_height - panel_height) / 2;
   const int row_top = StartupLanguageRowsTop();
   uint8 *pixels;
   int pitch;
 
-  g_renderer_funcs.BeginDraw(width, height, &pixels, &pitch);
-  FillRectNative(pixels, pitch, width, height, 1, 0, 0, width, height, background);
-  for (int i = 0; i < width / 19 + 1; i++) {
-    int x = (i * 47 + 13) % width;
-    int y = (i * 71 + 17) % height;
-    FillRectNative(pixels, pitch, width, height, 1, x, y, 1, 1, 0xff29463b);
-    if ((i & 3) == 0)
-      FillRectNative(pixels, pitch, width, height, 1, x + 2, y - 1, 1, 1, 0xff536143);
-  }
+  if (!StartupBeginDraw(&pixels, &pitch))
+    return;
+  DrawStartupBackground(pixels, pitch, width, height, 255);
+  StartupFillRect(pixels, pitch, width, height, left - 3, top - 3, panel_width + 6, panel_height + 6, 0xff020708);
+  StartupFillRect(pixels, pitch, width, height, left - 2, top - 2, panel_width + 4, panel_height + 4, gold);
+  BlendRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                  left, top, panel_width, panel_height, panel, 220);
+  StartupFillRect(pixels, pitch, width, height, left + 3, top + 3, panel_width - 6, 2, 0xff1b3027);
+  StartupFillRect(pixels, pitch, width, height, left + 3, top + 3, 2, panel_height - 6, 0xff1b3027);
 
-  FillRectNative(pixels, pitch, width, height, 1, left - 3, top - 3, panel_width + 6, panel_height + 6, 0xff020708);
-  FillRectNative(pixels, pitch, width, height, 1, left - 2, top - 2, panel_width + 4, panel_height + 4, gold);
-  FillRectNative(pixels, pitch, width, height, 1, left, top, panel_width, panel_height, panel);
-  FillRectNative(pixels, pitch, width, height, 1, left + 3, top + 3, panel_width - 6, panel_height - 6, 0xff1b3027);
-  FillRectNative(pixels, pitch, width, height, 1, left + 5, top + 5, panel_width - 10, panel_height - 10, panel);
-
-  RenderTextAt(pixels, pitch, width, height, 1, "THE LEGEND OF ZELDA", left + 11, top + 8, 0, bright_gold);
-  RenderTextAt(pixels, pitch, width, height, 1, "CHOIX DE LA LANGUE", left + 11, top + 21, 0, cream);
-  DrawStartupTriforce(pixels, pitch, width, height, left + panel_width - 36, top + 9);
-  FillRectNative(pixels, pitch, width, height, 1, left + 9, top + 35, panel_width - 18, 1, gold);
+  StartupText(pixels, pitch, width, height, "THE LEGEND OF ZELDA", left + 11, top + 8, bright_gold);
+  StartupText(pixels, pitch, width, height, "CHOIX DE LA LANGUE", left + 11, top + 21, cream);
+  StartupFillRect(pixels, pitch, width, height, left + 9, top + 35, panel_width - 18, 1, gold);
 
   for (int i = 0; i < language_count; i++) {
     int y = row_top + i * kStartupLanguageRowHeight;
     bool is_selected = i == selected;
-    FillRectNative(pixels, pitch, width, height, 1, left + 8, y, panel_width - 16, 16,
-                   is_selected ? 0xff31533d : (i & 1) ? 0xff142a23 : panel);
+    StartupFillRect(pixels, pitch, width, height, left + 8, y, panel_width - 16, 16,
+                    is_selected ? 0xff31533d : (i & 1) ? 0xff142a23 : panel);
     if (is_selected) {
       uint32 pulse = (SDL_GetTicks() / 240) & 1 ? bright_gold : gold;
-      FillRectNative(pixels, pitch, width, height, 1, left + 8, y, panel_width - 16, 1, pulse);
-      FillRectNative(pixels, pitch, width, height, 1, left + 8, y + 15, panel_width - 16, 1, pulse);
+      StartupFillRect(pixels, pitch, width, height, left + 8, y, panel_width - 16, 1, pulse);
+      StartupFillRect(pixels, pitch, width, height, left + 8, y + 15, panel_width - 16, 1, pulse);
       for (int row = 0; row < 5; row++) {
         int span = row < 3 ? row + 1 : 5 - row;
-        FillRectNative(pixels, pitch, width, height, 1, left + 13, y + 5 + row, span, 1, bright_gold);
+        StartupFillRect(pixels, pitch, width, height, left + 13, y + 5 + row, span, 1, bright_gold);
       }
     }
-    RenderTextAt(pixels, pitch, width, height, 1, labels[i], left + 23, y + 3, 0,
-                 is_selected ? cream : muted);
+    StartupText(pixels, pitch, width, height, labels[i], left + 23, y + 3,
+                is_selected ? cream : muted);
     if (i == saved_selection)
-      RenderTextAt(pixels, pitch, width, height, 1, "MEMORISEE", left + panel_width - 66, y + 3, 0, bright_gold);
+      StartupText(pixels, pitch, width, height, "MEMORISEE", left + panel_width - 66, y + 3, bright_gold);
   }
 
   int detail_top = row_top + language_count * kStartupLanguageRowHeight + 3;
-  FillRectNative(pixels, pitch, width, height, 1, left + 9, detail_top, panel_width - 18, 1, 0xff526b4c);
-  RenderTextAt(pixels, pitch, width, height, 1, "APERCU", left + 12, detail_top + 4, 0, bright_gold);
-  RenderTextAt(pixels, pitch, width, height, 1, descriptions[selected], left + 12, detail_top + 15, 0, cream);
-  RenderTextAt(pixels, pitch, width, height, 1, "LANGUE SAUVEGARDEE POUR LA SUITE", left + 12,
-               detail_top + 27, 0, muted);
+  StartupFillRect(pixels, pitch, width, height, left + 9, detail_top, panel_width - 18, 1, 0xff526b4c);
+  StartupText(pixels, pitch, width, height, "APERCU", left + 12, detail_top + 4, bright_gold);
+  StartupText(pixels, pitch, width, height, descriptions[selected], left + 12, detail_top + 15, cream);
+  StartupText(pixels, pitch, width, height, "LANGUE SAUVEGARDEE POUR LA SUITE", left + 12, detail_top + 27, muted);
 
   int footer_top = top + panel_height - 23;
-  FillRectNative(pixels, pitch, width, height, 1, left + 9, footer_top - 4, panel_width - 18, 1, 0xff526b4c);
-  RenderTextAt(pixels, pitch, width, height, 1, "HAUT / BAS OU SOURIS   CHOISIR", left + 12, footer_top, 0, cream);
-  RenderTextAt(pixels, pitch, width, height, 1, "ENTREE / A / START   VALIDER", left + 12, footer_top + 11, 0, bright_gold);
+  StartupFillRect(pixels, pitch, width, height, left + 9, footer_top - 4, panel_width - 18, 1, 0xff526b4c);
+  StartupText(pixels, pitch, width, height, "HAUT / BAS OU SOURIS   CHOISIR", left + 12, footer_top, cream);
+  StartupText(pixels, pitch, width, height, "ENTREE / A / START   VALIDER", left + 12, footer_top + 11, bright_gold);
   g_renderer_funcs.EndDraw();
 }
 
@@ -505,8 +730,6 @@ static bool MapStartupMouseToScreen(SDL_Window *window, int width, int height, i
   float scale_y = (float)window_height / height;
   if (!g_config.ignore_aspect_ratio) {
     float scale = scale_x < scale_y ? scale_x : scale_y;
-    if (g_config.integer_scaling && scale >= 1.0f)
-      scale = (float)(int)scale;
     float draw_width = width * scale;
     float draw_height = height * scale;
     *screen_x = (int)((mouse_x - (window_width - draw_width) * 0.5f) / scale);
@@ -516,6 +739,681 @@ static bool MapStartupMouseToScreen(SDL_Window *window, int width, int height, i
     *screen_y = mouse_y / scale_y;
   }
   return *screen_x >= 0 && *screen_x < width && *screen_y >= 0 && *screen_y < height;
+}
+
+typedef struct StartupGameCardBounds {
+  int x, y, width, height;
+} StartupGameCardBounds;
+
+typedef struct StartupCoverImage {
+  uint8 *pixels;
+  int width, height;
+  int crop_x, crop_y, crop_width, crop_height;
+} StartupCoverImage;
+
+typedef struct StartupBackgroundImage {
+  uint8 *pixels;
+  int width, height;
+} StartupBackgroundImage;
+
+typedef struct StartupScaledCover {
+  uint8 *pixels;
+  int width, height;
+} StartupScaledCover;
+
+static StartupCoverImage g_startup_covers[2];
+static StartupScaledCover g_startup_cover_cache[2][2];
+static StartupBackgroundImage g_startup_background;
+static uint8 *g_startup_background_cache;
+static int g_startup_background_cache_width, g_startup_background_cache_height;
+
+static void LoadStartupCovers(void) {
+  static const char *const paths[2] = {
+    "assets/startup_covers/a-link-to-the-past.jpg",
+    "assets/startup_covers/parallel-worlds.jpg",
+  };
+  for (int i = 0; i < 2; i++) {
+    StartupCoverImage *image = &g_startup_covers[i];
+    int channels;
+    image->pixels = stbi_load(paths[i], &image->width, &image->height, &channels, 4);
+    if (!image->pixels || image->width <= 0 || image->height <= 0) {
+      fprintf(stderr, "Unable to load startup game cover: %s\n", paths[i]);
+      continue;
+    }
+    if (i == 0) {
+      image->crop_x = 0;
+      image->crop_y = 0;
+      image->crop_width = image->width * 82 / 100;
+      image->crop_height = image->height;
+    } else {
+      image->crop_x = image->width * 15 / 100;
+      image->crop_y = image->height * 8 / 100;
+      image->crop_width = image->width * 71 / 100;
+      image->crop_height = image->height * 81 / 100;
+    }
+    if (image->crop_x + image->crop_width > image->width)
+      image->crop_width = image->width - image->crop_x;
+    if (image->crop_y + image->crop_height > image->height)
+      image->crop_height = image->height - image->crop_y;
+  }
+
+  int channels;
+  g_startup_background.pixels = stbi_load("assets/startup_covers/startup_background.png",
+                                           &g_startup_background.width,
+                                           &g_startup_background.height, &channels, 4);
+  if (!g_startup_background.pixels || g_startup_background.width <= 0 || g_startup_background.height <= 0) {
+    fprintf(stderr, "Unable to load startup background illustration.\n");
+    if (g_startup_background.pixels)
+      stbi_image_free(g_startup_background.pixels);
+    memset(&g_startup_background, 0, sizeof(g_startup_background));
+  }
+}
+
+static void FreeStartupCovers(void) {
+  for (int i = 0; i < 2; i++) {
+    if (g_startup_covers[i].pixels)
+      stbi_image_free(g_startup_covers[i].pixels);
+    memset(&g_startup_covers[i], 0, sizeof(g_startup_covers[i]));
+    for (int j = 0; j < 2; j++) {
+      free(g_startup_cover_cache[i][j].pixels);
+      memset(&g_startup_cover_cache[i][j], 0, sizeof(g_startup_cover_cache[i][j]));
+    }
+  }
+}
+
+static bool CacheStartupCoverImage(int game, int variant, int width, int height) {
+  StartupCoverImage *image = &g_startup_covers[game];
+  StartupScaledCover *cache = &g_startup_cover_cache[game][variant];
+  if (!image->pixels || image->crop_width <= 0 || image->crop_height <= 0 || width <= 0 || height <= 0)
+    return false;
+  if (cache->pixels && cache->width == width && cache->height == height)
+    return true;
+  free(cache->pixels);
+  memset(cache, 0, sizeof(*cache));
+  if (width > 16384 || height > 16384 || (size_t)width > SIZE_MAX / (size_t)height / 4)
+    return false;
+
+  uint8 *scaled = malloc((size_t)width * height * 4);
+  if (!scaled)
+    return false;
+  int64 source_x_step = (int64)(image->crop_width - 1) * 65536 / IntMax(width - 1, 1);
+  for (int y = 0; y < height; y++) {
+    int64 source_y_fixed = (int64)(image->crop_height - 1) * y * 65536 / IntMax(height - 1, 1);
+    int source_y = image->crop_y + (int)(source_y_fixed >> 16);
+    int source_y_next = IntMin(source_y + 1, image->crop_y + image->crop_height - 1);
+    int y_weight = (int)(source_y_fixed & 65535);
+    uint32 *row = (uint32 *)(scaled + (size_t)y * width * 4);
+    int64 source_x_fixed = 0;
+    for (int x = 0; x < width; x++) {
+      int source_x = image->crop_x + (int)(source_x_fixed >> 16);
+      int source_x_next = IntMin(source_x + 1, image->crop_x + image->crop_width - 1);
+      int x_weight = (int)(source_x_fixed & 65535);
+      const uint8 *p00 = image->pixels + ((size_t)source_y * image->width + source_x) * 4;
+      const uint8 *p10 = image->pixels + ((size_t)source_y * image->width + source_x_next) * 4;
+      const uint8 *p01 = image->pixels + ((size_t)source_y_next * image->width + source_x) * 4;
+      const uint8 *p11 = image->pixels + ((size_t)source_y_next * image->width + source_x_next) * 4;
+      int red_top = p00[0] + ((p10[0] - p00[0]) * x_weight >> 16);
+      int red_bottom = p01[0] + ((p11[0] - p01[0]) * x_weight >> 16);
+      int green_top = p00[1] + ((p10[1] - p00[1]) * x_weight >> 16);
+      int green_bottom = p01[1] + ((p11[1] - p01[1]) * x_weight >> 16);
+      int blue_top = p00[2] + ((p10[2] - p00[2]) * x_weight >> 16);
+      int blue_bottom = p01[2] + ((p11[2] - p01[2]) * x_weight >> 16);
+      int red = red_top + ((red_bottom - red_top) * y_weight >> 16);
+      int green = green_top + ((green_bottom - green_top) * y_weight >> 16);
+      int blue = blue_top + ((blue_bottom - blue_top) * y_weight >> 16);
+      row[x] = 0xff000000 | (red << 16) | (green << 8) | blue;
+      source_x_fixed += source_x_step;
+    }
+  }
+  cache->pixels = scaled;
+  cache->width = width;
+  cache->height = height;
+  return true;
+}
+
+static void FreeStartupBackground(void) {
+  if (g_startup_background.pixels)
+    stbi_image_free(g_startup_background.pixels);
+  memset(&g_startup_background, 0, sizeof(g_startup_background));
+  free(g_startup_background_cache);
+  g_startup_background_cache = NULL;
+  g_startup_background_cache_width = g_startup_background_cache_height = 0;
+}
+
+static bool CacheStartupBackground(int width, int height) {
+  if (!g_startup_background.pixels || width <= 0 || height <= 0)
+    return false;
+  if (g_startup_background_cache && g_startup_background_cache_width == width &&
+      g_startup_background_cache_height == height)
+    return true;
+
+  if (width > 16384 || height > 16384 || (size_t)width > SIZE_MAX / (size_t)height / 4)
+    return false;
+  size_t cache_size = (size_t)width * height * 4;
+  uint8 *cache = malloc(cache_size);
+  if (!cache)
+    return false;
+
+  int source_width = g_startup_background.width;
+  int source_height = g_startup_background.height;
+  int crop_x = 0, crop_y = 0, crop_width = source_width, crop_height = source_height;
+  if ((int64)source_width * height > (int64)source_height * width) {
+    crop_width = (int64)source_height * width / height;
+    crop_x = (source_width - crop_width) / 2;
+  } else {
+    crop_height = (int64)source_width * height / width;
+    crop_y = (source_height - crop_height) / 2;
+  }
+  if (crop_width <= 0 || crop_height <= 0) {
+    free(cache);
+    return false;
+  }
+
+  int64 source_x_step = (int64)(crop_width - 1) * 65536 / IntMax(width - 1, 1);
+  for (int y = 0; y < height; y++) {
+    int64 source_y_fixed = (int64)(crop_height - 1) * y * 65536 / IntMax(height - 1, 1);
+    int source_y = crop_y + (int)(source_y_fixed >> 16);
+    int source_y_next = IntMin(source_y + 1, crop_y + crop_height - 1);
+    int y_weight = (int)(source_y_fixed & 65535);
+    uint32 *dest_row = (uint32 *)(cache + (size_t)y * width * 4);
+    int64 source_x_fixed = 0;
+    for (int x = 0; x < width; x++) {
+      int source_x = crop_x + (int)(source_x_fixed >> 16);
+      int source_x_next = IntMin(source_x + 1, crop_x + crop_width - 1);
+      int x_weight = (int)(source_x_fixed & 65535);
+      const uint8 *p00 = g_startup_background.pixels + ((size_t)source_y * source_width + source_x) * 4;
+      const uint8 *p10 = g_startup_background.pixels + ((size_t)source_y * source_width + source_x_next) * 4;
+      const uint8 *p01 = g_startup_background.pixels + ((size_t)source_y_next * source_width + source_x) * 4;
+      const uint8 *p11 = g_startup_background.pixels + ((size_t)source_y_next * source_width + source_x_next) * 4;
+      int red_top = p00[0] + ((p10[0] - p00[0]) * x_weight >> 16);
+      int red_bottom = p01[0] + ((p11[0] - p01[0]) * x_weight >> 16);
+      int green_top = p00[1] + ((p10[1] - p00[1]) * x_weight >> 16);
+      int green_bottom = p01[1] + ((p11[1] - p01[1]) * x_weight >> 16);
+      int blue_top = p00[2] + ((p10[2] - p00[2]) * x_weight >> 16);
+      int blue_bottom = p01[2] + ((p11[2] - p01[2]) * x_weight >> 16);
+      int red = red_top + ((red_bottom - red_top) * y_weight >> 16);
+      int green = green_top + ((green_bottom - green_top) * y_weight >> 16);
+      int blue = blue_top + ((blue_bottom - blue_top) * y_weight >> 16);
+      dest_row[x] = 0xff000000 | ((uint32)red << 16) | ((uint32)green << 8) | blue;
+      source_x_fixed += source_x_step;
+    }
+  }
+
+  free(g_startup_background_cache);
+  g_startup_background_cache = cache;
+  g_startup_background_cache_width = width;
+  g_startup_background_cache_height = height;
+  return true;
+}
+
+static void DrawStartupBackground(uint8 *pixels, size_t pitch, int width, int height, int opacity) {
+  opacity = IntMax(IntMin(opacity, 255), 0);
+  if (CacheStartupBackground(width, height)) {
+    for (int y = 0; y < height; y++) {
+      uint32 *dest = (uint32 *)(pixels + (size_t)y * pitch);
+      const uint32 *source = (const uint32 *)(g_startup_background_cache + (size_t)y * width * 4);
+      if (opacity == 255) {
+        memcpy(dest, source, (size_t)width * 4);
+      } else {
+        for (int x = 0; x < width; x++) {
+          uint32 color = source[x];
+          int red = ((color >> 16) & 255) * opacity / 255;
+          int green = ((color >> 8) & 255) * opacity / 255;
+          int blue = (color & 255) * opacity / 255;
+          dest[x] = 0xff000000 | (red << 16) | (green << 8) | blue;
+        }
+      }
+    }
+  } else {
+    FillRectNative(pixels, pitch, width, height, 1, 0, 0, width, height, 0xff081318);
+    for (int i = 0; i < width / 19 + 1; i++) {
+      int x = (i * 47 + 13) % width;
+      int y = (i * 71 + 17) % height;
+      FillRectNative(pixels, pitch, width, height, 1, x, y, 1, 1, 0xff29463b);
+    }
+  }
+}
+
+static void BlendRectNative(uint8 *pixels, size_t pitch, int width, int height, int scale,
+                            int x, int y, int rect_width, int rect_height, uint32 color, int opacity) {
+  if (opacity <= 0 || rect_width <= 0 || rect_height <= 0)
+    return;
+  int left = IntMax(x * scale, 0);
+  int top = IntMax(y * scale, 0);
+  int right = IntMin((x + rect_width) * scale, width);
+  int bottom = IntMin((y + rect_height) * scale, height);
+  int source_red = (color >> 16) & 255;
+  int source_green = (color >> 8) & 255;
+  int source_blue = color & 255;
+  for (int py = top; py < bottom; py++) {
+    uint32 *row = (uint32 *)(pixels + (size_t)py * pitch);
+    for (int px = left; px < right; px++) {
+      uint32 dest = row[px];
+      int red = ((((dest >> 16) & 255) * (255 - opacity)) + source_red * opacity) / 255;
+      int green = ((((dest >> 8) & 255) * (255 - opacity)) + source_green * opacity) / 255;
+      int blue = (((dest & 255) * (255 - opacity)) + source_blue * opacity) / 255;
+      row[px] = 0xff000000 | (red << 16) | (green << 8) | blue;
+    }
+  }
+}
+
+static void DrawStartupGlow(uint8 *pixels, size_t pitch, int width, int height,
+                            const StartupGameCardBounds *bounds, int pulse) {
+  for (int layer = 4; layer >= 1; layer--) {
+    int alpha = pulse * (5 - layer) / 22;
+    BlendRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                    bounds->x - layer, bounds->y - layer, bounds->width + 2 * layer, 1,
+                    0xffffcf54, alpha);
+    BlendRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                    bounds->x - layer, bounds->y + bounds->height + layer - 1,
+                    bounds->width + 2 * layer, 1, 0xffffcf54, alpha);
+    BlendRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                    bounds->x - layer, bounds->y - layer, 1, bounds->height + 2 * layer,
+                    0xffffcf54, alpha);
+    BlendRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                    bounds->x + bounds->width + layer - 1, bounds->y - layer, 1,
+                    bounds->height + 2 * layer, 0xffffcf54, alpha);
+  }
+}
+
+static void DrawStartupTitleGlow(uint8 *pixels, size_t pitch, int width, int height,
+                                 int x, int y, int title_width, int pulse) {
+  for (int layer = 4; layer >= 1; layer--) {
+    int alpha = pulse * (5 - layer) / 30;
+    BlendRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                    x - layer, y - layer, title_width + 2 * layer, 1, 0xffffc94e, alpha);
+    BlendRectNative(pixels, pitch, width, height, g_startup_canvas_scale,
+                    x - layer, y + 10 + layer, title_width + 2 * layer, 1, 0xffffc94e, alpha);
+  }
+}
+
+static void GetStartupGameCardBounds(int index, int selected, StartupGameCardBounds *bounds) {
+  int panel_width = IntMin(g_startup_layout_width - 16, 440);
+  int panel_left = (g_startup_layout_width - panel_width) / 2;
+  int content_left = panel_left + 12;
+  int content_right = panel_left + panel_width - 12;
+  int active_width = IntMin(168, (g_startup_layout_width - 20) * 63 / 100);
+  active_width = IntMin(active_width, (content_right - content_left + 2) * 100 / 168);
+  int active_height_limit = g_startup_layout_height - 100;
+  int width_from_height = (active_height_limit - 8) * 118 / 100 + 12;
+  active_width = IntMin(active_width, width_from_height);
+  active_width = IntMax(active_width, 90);
+  int active_height = (active_width - 12) * 100 / 118 + 8;
+  int compact_width = active_width * 68 / 100;
+  int compact_height = (compact_width - 12) * 100 / 118 + 8;
+  int active_x = (g_startup_layout_width - active_width) / 2;
+  int active_y = IntMax(43, (g_startup_layout_height - active_height) / 2 - 4);
+  if (selected == 0 && active_x + active_width + compact_width - 1 > content_right)
+    active_x -= active_x + active_width + compact_width - 1 - content_right;
+  if (selected == 1 && active_x - compact_width + 1 < content_left)
+    active_x += content_left - (active_x - compact_width + 1);
+
+  if (index == selected) {
+    bounds->x = active_x;
+    bounds->y = active_y;
+    bounds->width = active_width;
+    bounds->height = active_height;
+  } else {
+    bounds->x = selected == 0 ? active_x + active_width - 1 : active_x - compact_width + 1;
+    bounds->y = active_y + (active_height - compact_height) / 2 + 3;
+    bounds->width = compact_width;
+    bounds->height = compact_height;
+  }
+}
+
+static void DrawStartupCoverImage(uint8 *pixels, size_t pitch, int width, int height,
+                                  const StartupGameCardBounds *bounds, int game, bool selected) {
+  int scale = g_startup_canvas_scale;
+  int x = (bounds->x + 4) * scale;
+  int y = (bounds->y + 4) * scale;
+  int draw_width = (bounds->width - 12) * scale;
+  int draw_height = (bounds->height - 8) * scale;
+  if (draw_width <= 0 || draw_height <= 0)
+    return;
+  int variant = selected ? 0 : 1;
+  if (!CacheStartupCoverImage(game, variant, draw_width, draw_height)) {
+    StartupFillRect(pixels, pitch, width, height, bounds->x + 4, bounds->y + 4,
+                    bounds->width - 12, bounds->height - 8, 0xff26352d);
+    StartupText(pixels, pitch, width, height, game == 0 ? "A LINK TO THE PAST" : "PARALLEL WORLDS",
+                bounds->x + 7, bounds->y + bounds->height / 2 - 4, 0xffffdc78);
+    return;
+  }
+
+  const StartupScaledCover *cache = &g_startup_cover_cache[game][variant];
+  int left = IntMax(x, 0), top = IntMax(y, 0);
+  int right = IntMin(x + draw_width, width), bottom = IntMin(y + draw_height, height);
+  if (left >= right || top >= bottom)
+    return;
+  for (int py = top; py < bottom; py++) {
+    uint32 *dest_row = (uint32 *)(pixels + (size_t)py * pitch);
+    const uint32 *source_row = (const uint32 *)(cache->pixels +
+                             ((size_t)(py - y) * cache->width + (left - x)) * 4);
+    memcpy(dest_row + left, source_row, (size_t)(right - left) * 4);
+  }
+}
+
+static void DrawStartupGameCard(uint8 *pixels, size_t pitch, int width, int height,
+                                const StartupGameCardBounds *bounds, int game, bool selected) {
+  uint32 cardboard = game == 0 ? 0xff8d6840 : 0xff635847;
+  uint32 edge = selected ? 0xffffdf82 : (game == 0 ? 0xffd0b06b : 0xff9a8b68);
+  int face_x = bounds->x + 4;
+  int face_y = bounds->y + 4;
+  int face_width = bounds->width - 12;
+  int face_height = bounds->height - 8;
+
+  StartupFillRect(pixels, pitch, width, height, bounds->x + 4, bounds->y + 5,
+                  bounds->width, bounds->height, 0xff020708);
+  StartupFillRect(pixels, pitch, width, height, bounds->x, bounds->y,
+                  bounds->width, bounds->height, cardboard);
+  StartupFillRect(pixels, pitch, width, height, bounds->x + 1, bounds->y + 1,
+                  bounds->width - 2, 2, edge);
+  StartupFillRect(pixels, pitch, width, height, bounds->x + bounds->width - 7, bounds->y + 3,
+                  5, bounds->height - 6, game == 0 ? 0xff44342c : 0xff302e2a);
+  StartupFillRect(pixels, pitch, width, height, bounds->x + bounds->width - 4, bounds->y + 4,
+                  1, bounds->height - 8, edge);
+  StartupFillRect(pixels, pitch, width, height, face_x - 1, face_y - 1,
+                  face_width + 2, face_height + 2, 0xff171b18);
+  DrawStartupCoverImage(pixels, pitch, width, height, bounds, game, selected);
+
+  if (game == 1) {
+    int banner_y = face_y + face_height - 11;
+    StartupFillRect(pixels, pitch, width, height, face_x, banner_y, face_width, 10, 0xff10251f);
+    StartupText(pixels, pitch, width, height, "PORT EN COURS",
+                face_x + (face_width - 78) / 2, banner_y + 1, 0xffffdc78);
+  }
+
+  if (selected) {
+    StartupFillRect(pixels, pitch, width, height, bounds->x - 2, bounds->y - 2,
+                    bounds->width + 4, 2, edge);
+    StartupFillRect(pixels, pitch, width, height, bounds->x - 2, bounds->y + bounds->height,
+                    bounds->width + 4, 2, edge);
+    StartupFillRect(pixels, pitch, width, height, bounds->x - 2, bounds->y,
+                    2, bounds->height, edge);
+    StartupFillRect(pixels, pitch, width, height, bounds->x + bounds->width, bounds->y,
+                    2, bounds->height, edge);
+    for (int row = 0; row < 5; row++)
+      StartupFillRect(pixels, pitch, width, height, bounds->x - 9 + row,
+                      bounds->y + bounds->height / 2 - 2 + row, 5 - row, 1, edge);
+  }
+}
+
+static int StartupAnimationProgress(uint32 elapsed, uint32 start, uint32 duration) {
+  if (elapsed <= start)
+    return 0;
+  int progress = (int)UintMin((elapsed - start) * 1000 / duration, 1000);
+  return progress * (2000 - progress) / 1000;
+}
+
+enum {
+  kStartupIntroDelayMs = 850,
+  kStartupBackgroundFadeMs = 1750,
+  kStartupTitleStartMs = 1050,
+  kStartupTitleDurationMs = 1600,
+  kStartupFirstCardStartMs = 2650,
+  kStartupSecondCardStartMs = 3750,
+  kStartupCardRevealMs = 950,
+};
+
+static int StartupPulseValue(int minimum, int maximum, uint32 period) {
+  uint32 phase = SDL_GetTicks() % period;
+  uint32 half_period = period / 2;
+  uint32 ramp = phase < half_period ? phase * 1000 / half_period : (period - phase) * 1000 / half_period;
+  return minimum + (maximum - minimum) * ramp / 1000;
+}
+
+static StartupGameCardBounds StartupRevealBounds(const StartupGameCardBounds *source, int progress, int game) {
+  StartupGameCardBounds bounds = *source;
+  int slide = (1000 - progress) * 82 / 1000;
+  bounds.x += game == 0 ? -slide : slide;
+  return bounds;
+}
+
+static void DrawStartupGameScreen(int selected, uint32 elapsed, bool intro_complete) {
+  const int width = g_startup_canvas_width;
+  const int height = g_startup_canvas_height;
+  const int layout_width = g_startup_layout_width;
+  const int layout_height = g_startup_layout_height;
+  const uint32 bright_gold = 0xffffdc78;
+  const uint32 cream = 0xffeee6c8;
+  const uint32 muted = 0xffc3cfb8;
+  uint8 *pixels;
+  int pitch;
+  if (!StartupBeginDraw(&pixels, &pitch))
+    return;
+
+  uint32 fade_elapsed = elapsed > kStartupIntroDelayMs ? elapsed - kStartupIntroDelayMs : 0;
+  int background_opacity = intro_complete ? 255 :
+                           IntMin((int)(fade_elapsed * 255 / kStartupBackgroundFadeMs), 255);
+  DrawStartupBackground(pixels, pitch, width, height, background_opacity);
+
+  uint32 title_start = kStartupIntroDelayMs + kStartupTitleStartMs;
+  int title_progress = intro_complete ? 1000 :
+                       StartupAnimationProgress(elapsed, title_start, kStartupTitleDurationMs);
+  int title_x = (layout_width - 19 * 6) / 2;
+  int title_y = 10 - (1000 - title_progress) * 32 / 1000;
+  int title_glow_pulse = StartupPulseValue(130, 220, 900);
+  if (intro_complete || elapsed >= title_start + kStartupTitleDurationMs - 350)
+    DrawStartupTitleGlow(pixels, pitch, width, height, title_x, title_y, 19 * 6, title_glow_pulse);
+  StartupText(pixels, pitch, width, height, "THE LEGEND OF ZELDA", title_x + 1, title_y + 1, 0xff101018);
+  StartupText(pixels, pitch, width, height, "THE LEGEND OF ZELDA", title_x, title_y, bright_gold);
+
+  int subtitle_x = (layout_width - 12 * 6) / 2;
+  StartupText(pixels, pitch, width, height, "CHOIX DU JEU", subtitle_x, title_y + 14, cream);
+  StartupFillRect(pixels, pitch, width, height, 14, title_y + 27, layout_width - 28, 1, 0xffc8a54a);
+
+  int reveal[2];
+  if (intro_complete) {
+    reveal[0] = reveal[1] = 1000;
+  } else {
+    reveal[0] = StartupAnimationProgress(elapsed, kStartupIntroDelayMs + kStartupFirstCardStartMs,
+                                         kStartupCardRevealMs);
+    reveal[1] = StartupAnimationProgress(elapsed, kStartupIntroDelayMs + kStartupSecondCardStartMs,
+                                         kStartupCardRevealMs);
+  }
+
+  StartupGameCardBounds card_bounds[2];
+  for (int game = 0; game < 2; game++)
+    GetStartupGameCardBounds(game, selected, &card_bounds[game]);
+  int selected_progress = reveal[selected];
+  int selection_pulse = StartupPulseValue(150, 255, 1000);
+  if (selected_progress > 120 &&
+      (intro_complete || elapsed >= kStartupIntroDelayMs + kStartupFirstCardStartMs + 300)) {
+    StartupGameCardBounds glow_bounds = StartupRevealBounds(&card_bounds[selected], selected_progress, selected);
+    DrawStartupGlow(pixels, pitch, width, height, &glow_bounds, selection_pulse);
+  }
+
+  for (int game = 0; game < 2; game++) {
+    if (reveal[game] < 130)
+      continue;
+    StartupGameCardBounds draw_bounds = StartupRevealBounds(&card_bounds[game], reveal[game], game);
+    DrawStartupGameCard(pixels, pitch, width, height, &draw_bounds, game, game == selected);
+  }
+
+  StartupGameCardBounds selected_bounds = StartupRevealBounds(&card_bounds[selected], selected_progress, selected);
+  int info_y = IntMin(selected_bounds.y + selected_bounds.height + 6, layout_height - 45);
+  if (selected_progress >= 650 || intro_complete) {
+    const char *info = selected == 0 ? "A LINK TO THE PAST - PRET A JOUER" : "PARALLEL WORLDS - PORT EN COURS";
+    int info_width = (int)strlen(info) * 6;
+    StartupText(pixels, pitch, width, height, info, (layout_width - info_width) / 2, info_y,
+                selected == 0 ? bright_gold : 0xffffbe76);
+  }
+
+  if (reveal[1] >= 750 || intro_complete) {
+    int footer_top = layout_height - 24;
+    StartupFillRect(pixels, pitch, width, height, 14, footer_top - 5, layout_width - 28, 1, 0xff526b4c);
+    StartupText(pixels, pitch, width, height, "GAUCHE / DROITE OU SOURIS   CHOISIR",
+                (layout_width - 36 * 6) / 2, footer_top, muted);
+    StartupText(pixels, pitch, width, height, "ENTREE / A / START   OUVRIR",
+                (layout_width - 27 * 6) / 2, footer_top + 11, cream);
+  }
+  g_renderer_funcs.EndDraw();
+}
+
+static bool SelectStartupGame(SDL_Window *window) {
+  int selected = 0;
+  bool confirmed = false;
+  int axis_navigation = 0;
+  uint32 animation_start;
+  bool intro_complete = false;
+  bool mouse_motion_seen = false;
+  int mouse_anchor_x = 0, mouse_anchor_y = 0;
+  unsigned int cue_mask = 0;
+
+  LoadStartupCovers();
+  CacheStartupBackground(g_startup_canvas_width, g_startup_canvas_height);
+  for (int game = 0; game < 2; game++) {
+    for (int variant = 0; variant < 2; variant++) {
+      StartupGameCardBounds bounds;
+      int selected_for_size = variant == 0 ? game : 1 - game;
+      GetStartupGameCardBounds(game, selected_for_size, &bounds);
+      CacheStartupCoverImage(game, variant,
+                             (bounds.width - 12) * g_startup_canvas_scale,
+                             (bounds.height - 8) * g_startup_canvas_scale);
+    }
+  }
+  SDL_FlushEvent(SDL_MOUSEMOTION);
+  animation_start = SDL_GetTicks();
+
+  while (!confirmed) {
+    StartupCanvasUpdate(window);
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_KEYDOWN || event.type == SDL_MOUSEBUTTONDOWN ||
+          event.type == SDL_CONTROLLERBUTTONDOWN ||
+          (event.type == SDL_CONTROLLERAXISMOTION &&
+           (event.caxis.value >= 16000 || event.caxis.value <= -16000)))
+        intro_complete = true;
+      switch (event.type) {
+      case SDL_QUIT:
+        return false;
+      case SDL_WINDOWEVENT:
+        if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+          return false;
+        }
+        break;
+      case SDL_CONTROLLERDEVICEADDED:
+        OpenOneGamepad(event.cdevice.which);
+        break;
+      case SDL_KEYDOWN:
+        if (event.key.repeat)
+          break;
+        switch (event.key.keysym.sym) {
+        case SDLK_UP:
+        case SDLK_DOWN:
+        case SDLK_LEFT:
+        case SDLK_RIGHT:
+          StartupChangeSelection(&selected, 1 - selected);
+          break;
+        case SDLK_RETURN:
+        case SDLK_KP_ENTER:
+        case SDLK_SPACE:
+          if (selected == 0) {
+            confirmed = true;
+            StartupSfxPlay(kStartupCue_Confirm);
+          }
+          break;
+        case SDLK_ESCAPE:
+          return false;
+        }
+        break;
+      case SDL_CONTROLLERBUTTONDOWN:
+        switch (event.cbutton.button) {
+        case SDL_CONTROLLER_BUTTON_DPAD_UP:
+        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+          StartupChangeSelection(&selected, 1 - selected);
+          break;
+        case SDL_CONTROLLER_BUTTON_A:
+        case SDL_CONTROLLER_BUTTON_START:
+          if (selected == 0) {
+            confirmed = true;
+            StartupSfxPlay(kStartupCue_Confirm);
+          }
+          break;
+        case SDL_CONTROLLER_BUTTON_B:
+          return false;
+        }
+        break;
+      case SDL_CONTROLLERAXISMOTION:
+        if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
+          int direction = event.caxis.value > 16000 ? 1 : event.caxis.value < -16000 ? -1 : 0;
+          if (direction != 0 && axis_navigation == 0)
+            StartupChangeSelection(&selected, 1 - selected);
+          axis_navigation = direction;
+        }
+        break;
+      case SDL_MOUSEBUTTONDOWN: {
+        int mouse_x, mouse_y;
+        if (event.button.button == SDL_BUTTON_LEFT &&
+            MapStartupMouseToScreen(window, g_startup_layout_width, g_startup_layout_height,
+                                    event.button.x, event.button.y, &mouse_x, &mouse_y)) {
+          for (int i = 0; i < 2; i++) {
+            StartupGameCardBounds bounds;
+            GetStartupGameCardBounds(i, selected, &bounds);
+            if (mouse_x >= bounds.x && mouse_x < bounds.x + bounds.width &&
+                mouse_y >= bounds.y && mouse_y < bounds.y + bounds.height) {
+              StartupChangeSelection(&selected, i);
+              if (i == 0) {
+                confirmed = true;
+                StartupSfxPlay(kStartupCue_Confirm);
+              }
+              break;
+            }
+          }
+        }
+        break;
+      }
+      case SDL_MOUSEMOTION: {
+        if (!mouse_motion_seen) {
+          mouse_anchor_x = event.motion.x;
+          mouse_anchor_y = event.motion.y;
+          mouse_motion_seen = true;
+        } else if (event.motion.x - mouse_anchor_x >= 4 || event.motion.x - mouse_anchor_x <= -4 ||
+                   event.motion.y - mouse_anchor_y >= 4 || event.motion.y - mouse_anchor_y <= -4) {
+          intro_complete = true;
+        }
+        int mouse_x, mouse_y;
+        if (MapStartupMouseToScreen(window, g_startup_layout_width, g_startup_layout_height,
+                                    event.motion.x, event.motion.y, &mouse_x, &mouse_y)) {
+          for (int i = 0; i < 2; i++) {
+            StartupGameCardBounds bounds;
+            GetStartupGameCardBounds(i, selected, &bounds);
+            if (mouse_x >= bounds.x && mouse_x < bounds.x + bounds.width &&
+                mouse_y >= bounds.y && mouse_y < bounds.y + bounds.height) {
+              StartupChangeSelection(&selected, i);
+              break;
+            }
+          }
+        }
+        break;
+      }
+      }
+    }
+    uint32 elapsed = SDL_GetTicks() - animation_start;
+    if (!intro_complete) {
+      if (elapsed >= kStartupIntroDelayMs + kStartupTitleStartMs + 250 && !(cue_mask & 1)) {
+        StartupSfxPlay(kStartupCue_Title);
+        cue_mask |= 1;
+      }
+      if (elapsed >= kStartupIntroDelayMs + kStartupFirstCardStartMs && !(cue_mask & 2)) {
+        StartupSfxPlay(kStartupCue_Reveal);
+        cue_mask |= 2;
+      }
+      if (elapsed >= kStartupIntroDelayMs + kStartupSecondCardStartMs && !(cue_mask & 4)) {
+        StartupSfxPlay(kStartupCue_Reveal);
+        cue_mask |= 4;
+      }
+    }
+    DrawStartupGameScreen(selected, elapsed, intro_complete);
+    SDL_Delay(16);
+  }
+
+  bool choice_changed = !g_config.game || !StringEqualsNoCase(g_config.game, "alttp");
+  g_config.game = "alttp";
+  if (choice_changed && !Config_SaveUserSettings())
+    fprintf(stderr, "Warning: unable to save selected game.\n");
+  return true;
 }
 
 static bool SelectStartupLanguage(SDL_Window *window) {
@@ -544,6 +1442,7 @@ static bool SelectStartupLanguage(SDL_Window *window) {
   bool confirmed = false;
   int axis_navigation[SDL_CONTROLLER_AXIS_MAX] = { 0 };
   while (!confirmed) {
+    StartupCanvasUpdate(window);
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -562,23 +1461,24 @@ static bool SelectStartupLanguage(SDL_Window *window) {
         switch (event.key.keysym.sym) {
         case SDLK_UP:
         case SDLK_LEFT:
-          selected = (selected + language_count - 1) % language_count;
+          StartupChangeSelection(&selected, (selected + language_count - 1) % language_count);
           break;
         case SDLK_DOWN:
         case SDLK_RIGHT:
-          selected = (selected + 1) % language_count;
+          StartupChangeSelection(&selected, (selected + 1) % language_count);
           break;
         case SDLK_HOME:
-          selected = 0;
+          StartupChangeSelection(&selected, 0);
           break;
         case SDLK_END:
-          selected = language_count - 1;
+          StartupChangeSelection(&selected, language_count - 1);
           break;
         case SDLK_RETURN:
         case SDLK_KP_ENTER:
         case SDLK_SPACE:
         case SDLK_ESCAPE:
           confirmed = true;
+          StartupSfxPlay(kStartupCue_Confirm);
           break;
         }
         break;
@@ -586,18 +1486,20 @@ static bool SelectStartupLanguage(SDL_Window *window) {
         switch (event.cbutton.button) {
         case SDL_CONTROLLER_BUTTON_DPAD_UP:
         case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-          selected = (selected + language_count - 1) % language_count;
+          StartupChangeSelection(&selected, (selected + language_count - 1) % language_count);
           break;
         case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
         case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-          selected = (selected + 1) % language_count;
+          StartupChangeSelection(&selected, (selected + 1) % language_count);
           break;
         case SDL_CONTROLLER_BUTTON_A:
         case SDL_CONTROLLER_BUTTON_START:
           confirmed = true;
+          StartupSfxPlay(kStartupCue_Confirm);
           break;
         case SDL_CONTROLLER_BUTTON_B:
           confirmed = true;
+          StartupSfxPlay(kStartupCue_Confirm);
           break;
         }
         break;
@@ -605,30 +1507,33 @@ static bool SelectStartupLanguage(SDL_Window *window) {
         if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY || event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
           int direction = event.caxis.value > 16000 ? 1 : event.caxis.value < -16000 ? -1 : 0;
           if (direction != 0 && axis_navigation[event.caxis.axis] == 0)
-            selected = (selected + language_count + direction) % language_count;
+            StartupChangeSelection(&selected, (selected + language_count + direction) % language_count);
           axis_navigation[event.caxis.axis] = direction;
         }
         break;
       case SDL_MOUSEBUTTONDOWN: {
         int mouse_x, mouse_y;
         if (event.button.button == SDL_BUTTON_LEFT &&
-            MapStartupMouseToScreen(window, g_snes_width, g_snes_height, event.button.x, event.button.y, &mouse_x, &mouse_y)) {
+            MapStartupMouseToScreen(window, g_startup_layout_width, g_startup_layout_height,
+                                    event.button.x, event.button.y, &mouse_x, &mouse_y)) {
           int row_top = StartupLanguageRowsTop();
           int row = (mouse_y - row_top) / kStartupLanguageRowHeight;
           if (row >= 0 && row < language_count && mouse_y >= row_top && mouse_y < row_top + language_count * kStartupLanguageRowHeight) {
-            selected = row;
+            StartupChangeSelection(&selected, row);
             confirmed = true;
+            StartupSfxPlay(kStartupCue_Confirm);
           }
         }
         break;
       }
       case SDL_MOUSEMOTION: {
         int mouse_x, mouse_y;
-        if (MapStartupMouseToScreen(window, g_snes_width, g_snes_height, event.motion.x, event.motion.y, &mouse_x, &mouse_y)) {
+        if (MapStartupMouseToScreen(window, g_startup_layout_width, g_startup_layout_height,
+                                    event.motion.x, event.motion.y, &mouse_x, &mouse_y)) {
           int row_top = StartupLanguageRowsTop();
           int row = (mouse_y - row_top) / kStartupLanguageRowHeight;
           if (row >= 0 && row < language_count && mouse_y >= row_top && mouse_y < row_top + language_count * kStartupLanguageRowHeight)
-            selected = row;
+            StartupChangeSelection(&selected, row);
         }
         break;
       }
@@ -657,22 +1562,6 @@ int main(int argc, char** argv) {
     SwitchDirectory();
   }
   ParseConfigFile(config_file);
-  LoadAssets();
-  LoadLinkGraphics();
-
-  ZeldaInitialize();
-  HdTexturePack_Init(g_zenv.ppu);
-  int saved_pack = g_config.hd_texture_pack_folder[0] ?
-                   HdTexturePack_FindFolder(g_config.hd_texture_pack_folder) : g_config.hd_texture_pack_index;
-  if (g_config.hd_texture_pack_folder[0] && saved_pack < 0) {
-    snprintf(g_shader_status, sizeof(g_shader_status), "PACK HD INTROUVABLE: %s", g_config.hd_texture_pack_folder);
-    g_shader_status_frames = 240;
-  }
-  if (saved_pack >= 0 && HdTexturePack_Select(saved_pack) && HdTexturePack_Enabled()) {
-    g_config.new_renderer = true;
-    g_config.enhanced_mode7 = true;
-  }
-  g_zenv.ppu->extraLeftRight = UintMin(g_config.extended_aspect_ratio, kPpuExtraLeftRight);
   g_snes_width = (g_config.extended_aspect_ratio * 2 + 256);
   g_snes_height = (g_config.extend_y ? 240 : 224);
 
@@ -736,13 +1625,51 @@ int main(int argc, char** argv) {
     return 1;
   for (int i = 0; i < SDL_NumJoysticks(); i++)
     OpenOneGamepad(i);
+
+  StartupCanvasEnter(window);
+  StartupSfxOpen();
+  if (!SelectStartupGame(window)) {
+    StartupSfxClose();
+    StartupCanvasLeave();
+    FreeStartupCovers();
+    FreeStartupBackground();
+    g_renderer_funcs.Destroy();
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return 0;
+  }
+
+  LoadAssets();
+  LoadLinkGraphics();
+  ZeldaInitialize();
+  HdTexturePack_Init(g_zenv.ppu);
+  int saved_pack = g_config.hd_texture_pack_folder[0] ?
+                   HdTexturePack_FindFolder(g_config.hd_texture_pack_folder) : g_config.hd_texture_pack_index;
+  if (g_config.hd_texture_pack_folder[0] && saved_pack < 0) {
+    snprintf(g_shader_status, sizeof(g_shader_status), "PACK HD INTROUVABLE: %s", g_config.hd_texture_pack_folder);
+    g_shader_status_frames = 240;
+  }
+  if (saved_pack >= 0 && HdTexturePack_Select(saved_pack) && HdTexturePack_Enabled()) {
+    g_config.new_renderer = true;
+    g_config.enhanced_mode7 = true;
+  }
+  g_zenv.ppu->extraLeftRight = UintMin(g_config.extended_aspect_ratio, kPpuExtraLeftRight);
+
   if (!SelectStartupLanguage(window)) {
+    StartupSfxClose();
+    StartupCanvasLeave();
+    FreeStartupCovers();
+    FreeStartupBackground();
     g_renderer_funcs.Destroy();
     HdTexturePack_Shutdown();
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
   }
+  StartupSfxClose();
+  StartupCanvasLeave();
+  FreeStartupCovers();
+  FreeStartupBackground();
   if (g_config.enhanced_mode7 && g_config.new_renderer && OpenGLRenderer_CanRenderMode7Gpu())
     g_ppu_render_flags |= kPpuRenderFlags_GpuMode7;
 
@@ -1061,12 +1988,12 @@ static void RenderTextAt(uint8 *dst, size_t pitch, int width, int height, int sc
           continue;
         for (int sy = 0; sy < scale; sy++) {
           int py = top + (2 + y) * scale + sy;
-          if (py >= height)
+          if (py < 0 || py >= height)
             continue;
           uint32 *row = (uint32 *)(dst + py * pitch);
           for (int sx = 0; sx < scale; sx++) {
             int px = left + (2 + i * 6 + x) * scale + sx;
-            if (px < width)
+            if (px >= 0 && px < width)
               row[px] = foreground;
           }
         }

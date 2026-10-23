@@ -583,6 +583,14 @@ static bool HandleIniConfig(int section, const char *key, char *value) {
     } else if (StringEqualsNoCase(key, "Language")) {
       g_config.language = value;
       return true;
+    } else if (StringEqualsNoCase(key, "Game")) {
+      if (StringEqualsNoCase(value, "alttp"))
+        g_config.game = "alttp";
+      else if (StringEqualsNoCase(value, "parallel-worlds"))
+        g_config.game = "parallel-worlds";
+      else
+        return false;
+      return true;
     }
   } else if (section == 4) {
     if (StringEqualsNoCase(key, "ItemSwitchLR")) {
@@ -655,6 +663,7 @@ static bool ParseOneConfigFile(const char *filename, int depth) {
 }
 
 void ParseConfigFile(const char *filename) {
+  g_config.game = "alttp";
   g_config.msuvolume = 100;  // default msu volume, 100%
   g_config.widescreen_hud = true;
   g_config.pixel_lighting = true;
@@ -837,8 +846,9 @@ bool Config_SaveUserSettings(void) {
   if (old_length)
     fwrite(old_data, 1, old_length, f);
   if (old_length && old_data[old_length - 1] != '\n') fputc('\n', f);
-  fprintf(f, "%s\n[General]\nLanguage = %s\n\n[Graphics]\n",
-          begin_marker, g_config.language ? g_config.language : "us");
+  fprintf(f, "%s\n[General]\nLanguage = %s\nGame = %s\n\n[Graphics]\n",
+          begin_marker, g_config.language ? g_config.language : "us",
+          g_config.game ? g_config.game : "alttp");
   fprintf(f, "WidescreenHud = %d\nPixelLighting = %d\nEnvironmentAnimations = %d\nHeightCues = %d\nIntegerScaling = %d\n",
           g_config.widescreen_hud, g_config.pixel_lighting, g_config.environment_animations,
           g_config.height_cues, g_config.integer_scaling);

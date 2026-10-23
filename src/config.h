@@ -103,6 +103,7 @@ typedef struct Config {
   const char *shader;
   const char *msu_path;
   const char *language;
+  const char *game;
 } Config;
 
 enum {

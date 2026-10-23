@@ -8,7 +8,6 @@
 #include <string.h>
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_THREAD_LOCALS
-#define STBI_ONLY_PNG
 #define STBI_MAX_DIMENSIONS 4096
 #define STBI_NO_FAILURE_STRINGS
 #include "third_party/stb/stb_image.h"

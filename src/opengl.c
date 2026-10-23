@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "types.h"
 #include "util.h"
 #include "glsl_shader.h"
@@ -18,6 +19,7 @@ static unsigned int g_program, g_VAO;
 static GlTextureWithSize g_texture;
 static GlslShader *g_glsl_shader;
 static bool g_glsl_shader_enabled;
+static bool g_startup_presentation_active, g_startup_saved_shader_enabled;
 static int g_selected_shader_param;
 static char g_shader_status[128];
 static bool g_opengl_es;
@@ -533,18 +535,38 @@ const char *OpenGLRenderer_HandleShaderCommand(uint32 command) {
 }
 
 static void OpenGLRenderer_BeginDraw(int width, int height, uint8 **pixels, int *pitch) {
-  int size = width * height;
+  *pixels = NULL;
+  *pitch = 0;
+  if (width <= 0 || height <= 0 || (size_t)width > SIZE_MAX / (size_t)height / 4)
+    return;
+  size_t size = (size_t)width * height;
 
   if (size > g_screen_buffer_size) {
-    g_screen_buffer_size = size;
+    uint8 *buffer = malloc(size * 4);
+    if (!buffer)
+      return;
     free(g_screen_buffer);
-    g_screen_buffer = malloc(size * 4);
+    g_screen_buffer = buffer;
+    g_screen_buffer_size = size;
   }
 
   g_draw_width = width;
   g_draw_height = height;
   *pixels = g_screen_buffer;
   *pitch = width * 4;
+}
+
+void OpenGLRenderer_SetStartupPresentation(bool enabled) {
+  if (enabled) {
+    if (!g_startup_presentation_active) {
+      g_startup_saved_shader_enabled = g_glsl_shader_enabled;
+      g_startup_presentation_active = true;
+    }
+    g_glsl_shader_enabled = false;
+  } else if (g_startup_presentation_active) {
+    g_glsl_shader_enabled = g_startup_saved_shader_enabled;
+    g_startup_presentation_active = false;
+  }
 }
 
 static void OpenGLRenderer_EndDraw() {
