@@ -1,6 +1,6 @@
 @echo off
 
-set SDL2=third_party\SDL2-2.28.2
+set SDL2=third_party\SDL2
 
 IF NOT EXIST "third_party\tcc\tcc.exe" (
   ECHO:

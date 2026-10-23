@@ -1,4 +1,5 @@
 from PIL import Image
+import os
 import sprite_sheet_info
 import util
 from util import get_bytes, get_words, get_byte, cache
@@ -150,6 +151,8 @@ kFontTypes = {
   'de'   : (0xCC6E8, 256, 'font_de.png', (0x8CDECF, 112)),
   'fr'   : (0xCC6E8, 256, 'font_fr.png', (0x8CDEAF, 112)),
   'fr-c' : (0xCD078, 256, 'font_fr_c.png', (0x8CE83F, 112)),
+  'fr-beauce' : (0xCD078, 256, 'font_fr_beauce.png', (0x8CE83F, 112)),
+  'fr-ca-sacres' : (0xCD078, 256, 'font_fr_ca_sacres.png', (0x8CE83F, 112)),
   'en'   : (0x8E8000, 256, 'font_en.png', (0x8ECAFF, 102)),
   'es'   : (0x8e8000, 256, 'font_es.png', (0x8ECADF, 99)),
   'pl'   : (0x8e8000, 256, 'font_pl.png', (0x8ECADF, 99)),
@@ -199,7 +202,10 @@ def decode_font():
     assert (data, W) == encode_font_from_png(lang)
 
 def encode_font_from_png(lang):
-  font_data = Image.open(kFontTypes[lang][2]).tobytes()
+  font_filename = kFontTypes[lang][2]
+  if lang in ('fr-c', 'fr-beauce', 'fr-ca-sacres') and not os.path.exists(font_filename):
+    font_filename = kFontTypes['fr'][2]
+  font_data = Image.open(font_filename).tobytes()
   def encode_one_spr_2bit(data, offs, target, toffs, pitch):
     for y in range(8):
       d0, d1 = 0, 0

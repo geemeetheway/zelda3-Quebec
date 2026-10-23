@@ -11,6 +11,10 @@
 #include "util.h"
 #include "audio.h"
 #include "assets.h"
+#include "config.h"
+#ifdef _WIN32
+__declspec(dllimport) int __stdcall MoveFileExA(const char *existing, const char *replacement, unsigned long flags);
+#endif
 ZeldaEnv g_zenv;
 uint8 g_ram[131072];
 
@@ -169,6 +173,11 @@ static void ConfigurePpuSideSpace() {
     extra_left = kPpuExtraLeftRight, extra_right = kPpuExtraLeftRight;
     extra_bottom = 16;
   }
+  extra_left = IntMax(extra_left, 0);
+  extra_right = IntMax(extra_right, 0);
+  int camera_shift = IntMax(-extra_right, IntMin(extra_left, g_config.camera_bias));
+  extra_left -= camera_shift;
+  extra_right += camera_shift;
   PpuSetExtraSideSpace(g_zenv.ppu, extra_left, extra_right, extra_bottom);
 }
 
@@ -377,6 +386,7 @@ static void InternalSaveLoad(SaveLoadFunc *func, void *ctx) {
 }
 
 void ZeldaReset(bool preserve_sram) {
+  ZeldaRewindReset();
   frame_ctr_dbg = 0;
   dma_reset(g_zenv.dma);
   ppu_reset(g_zenv.ppu);
@@ -530,7 +540,7 @@ void StateRecorder_Load(StateRecorder *sr, FILE *f, bool replay_mode) {
   }
 }
 
-void StateRecorder_Save(StateRecorder *sr, FILE *f) {
+bool StateRecorder_Save(StateRecorder *sr, FILE *f) {
   uint32 hdr[8] = { 0 };
   ByteArray arr = { 0 };
   SaveSnesState(&saveFunc, &arr);
@@ -550,12 +560,15 @@ void StateRecorder_Save(StateRecorder *sr, FILE *f) {
     hdr[5] |= sr->replay_pos_last_complete << 1;
     hdr[7] = sr->replay_frame_counter;
   }
-  fwrite(hdr, 1, sizeof(hdr), f);
-  fwrite(sr->log.data, 1, hdr[2], f);
-  fwrite(sr->base_snapshot.data, 1, sr->base_snapshot.size, f);
-  fwrite(arr.data, 1, arr.size, f);
+  bool ok = fwrite(hdr, 1, sizeof(hdr), f) == sizeof(hdr);
+  if (ok && hdr[2]) ok = fwrite(sr->log.data, 1, hdr[2], f) == hdr[2];
+  if (ok && sr->base_snapshot.size)
+    ok = fwrite(sr->base_snapshot.data, 1, sr->base_snapshot.size, f) == sr->base_snapshot.size;
+  if (ok && arr.size) ok = fwrite(arr.data, 1, arr.size, f) == arr.size;
+  if (ok) ok = fflush(f) == 0;
 
   ByteArray_Destroy(&arr);
+  return ok;
 }
 
 void StateRecorder_ClearKeyLog(StateRecorder *sr) {
@@ -592,6 +605,18 @@ void StateRecorder_ClearKeyLog(StateRecorder *sr) {
   }
   ByteArray_Destroy(&old_log);
   sr->frames_since_last = 0;
+}
+
+void ZeldaSetWantedFeatures(uint32 features) {
+  g_wanted_zelda_features = features;
+  if (animated_tile_data_src == 0 || enhanced_features0 == features)
+    return;
+
+  ZeldaApuLock();
+  enhanced_features0 = features;
+  EmuSyncMemoryRegion(&enhanced_features0, sizeof(enhanced_features0));
+  StateRecorder_RecordPatchByte(&state_recorder, kRam_Features0, (uint8 *)&enhanced_features0, sizeof(enhanced_features0));
+  ZeldaApuUnlock();
 }
 
 uint16 StateRecorder_ReadNextReplayState(StateRecorder *sr) {
@@ -651,6 +676,56 @@ void StateRecorder_StopReplay(StateRecorder *sr) {
   sr->replay_mode = false;
   sr->total_frames = sr->replay_frame_counter;
   sr->log.size = sr->replay_pos_last_complete;
+}
+
+enum {
+  kRewindSnapshotCount = 24,
+  kRewindSnapshotInterval = 15,
+};
+static ByteArray g_rewind_snapshots[kRewindSnapshotCount];
+static int g_rewind_next_snapshot;
+static int g_rewind_snapshot_count;
+static int g_rewind_frame_counter;
+
+void ZeldaRewindReset() {
+  g_rewind_next_snapshot = 0;
+  g_rewind_snapshot_count = 0;
+  g_rewind_frame_counter = 0;
+}
+
+void ZeldaRewindCaptureFrame() {
+  if (++g_rewind_frame_counter < kRewindSnapshotInterval)
+    return;
+  g_rewind_frame_counter = 0;
+
+  ByteArray *snapshot = &g_rewind_snapshots[g_rewind_next_snapshot];
+  snapshot->size = 0;
+  SaveSnesState(&saveFunc, snapshot);
+  g_rewind_next_snapshot = (g_rewind_next_snapshot + 1) % kRewindSnapshotCount;
+  if (g_rewind_snapshot_count < kRewindSnapshotCount)
+    g_rewind_snapshot_count++;
+}
+
+bool ZeldaRewindStep() {
+  if (g_rewind_snapshot_count == 0)
+    return false;
+
+  int index = (g_rewind_next_snapshot + kRewindSnapshotCount - 1) % kRewindSnapshotCount;
+  ByteArray *snapshot = &g_rewind_snapshots[index];
+  if (snapshot->size == 0)
+    return false;
+
+  LoadFuncState state = { snapshot->data, snapshot->data + snapshot->size };
+  LoadSnesState(&loadFunc, &state);
+  assert(state.p == state.pend);
+
+  // Consume the restored checkpoint so repeated presses continue backward.
+  g_rewind_next_snapshot = index;
+  g_rewind_snapshot_count--;
+  g_rewind_frame_counter = 0;
+  StateRecorder_StopReplay(&state_recorder);
+  StateRecorder_ClearKeyLog(&state_recorder);
+  return true;
 }
 
 #ifdef _DEBUG
@@ -791,27 +866,46 @@ static const char *const kReferenceSaves[] = {
   "Chapter 13 - After Ganon's Tower.sav",
 };
 
-void SaveLoadSlot(int cmd, int which) {
-  char name[128];
+bool SaveLoadSlot(int cmd, int which) {
+  char name[128], temporary[160];
   if (which & 256) {
     if (cmd == kSaveLoad_Save)
-      return;
+      return false;
     sprintf(name, "saves/ref/%s", kReferenceSaves[which - 256]);
+  } else if (which == 11) {
+    sprintf(name, "saves/boss-lab.sav");
   } else {
     sprintf(name, "saves/save%d.sav", which);
   }
-  FILE *f = fopen(name, cmd != kSaveLoad_Save ? "rb" : "wb");
-  if (f) {
-    printf("*** %s slot %d\n",
-      cmd == kSaveLoad_Save ? "Saving" : cmd == kSaveLoad_Load ? "Loading" : "Replaying", which);
+  if (cmd == kSaveLoad_Save)
+    snprintf(temporary, sizeof(temporary), "%s.tmp", name);
+  FILE *f = fopen(cmd == kSaveLoad_Save ? temporary : name, cmd != kSaveLoad_Save ? "rb" : "wb");
+  if (!f)
+    return false;
+  printf("*** %s slot %d\n",
+    cmd == kSaveLoad_Save ? "Saving" : cmd == kSaveLoad_Load ? "Loading" : "Replaying", which);
 
-    if (cmd != kSaveLoad_Save)
-      StateRecorder_Load(&state_recorder, f, cmd == kSaveLoad_Replay);
-    else
-      StateRecorder_Save(&state_recorder, f);
+  bool ok = true;
+  if (cmd != kSaveLoad_Save)
+    StateRecorder_Load(&state_recorder, f, cmd == kSaveLoad_Replay);
+  else
+    ok = StateRecorder_Save(&state_recorder, f);
 
-    fclose(f);
+  if (cmd != kSaveLoad_Save)
+    ZeldaRewindReset();
+
+  if (fclose(f) != 0)
+    ok = false;
+  if (cmd == kSaveLoad_Save && ok) {
+#ifdef _WIN32
+    ok = MoveFileExA(temporary, name, 0x1 | 0x8) != 0;
+#else
+    ok = rename(temporary, name) == 0;
+#endif
   }
+  if (cmd == kSaveLoad_Save && !ok)
+    remove(temporary);
+  return ok;
 }
 
 typedef struct StateRecoderMultiPatch {

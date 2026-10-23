@@ -5,6 +5,9 @@
 #include <SDL.h>
 #include "features.h"
 #include "util.h"
+#ifdef _WIN32
+__declspec(dllimport) int __stdcall MoveFileExA(const char *existing, const char *replacement, unsigned long flags);
+#endif
 
 enum {
   kKeyMod_ScanCode = 0x200,
@@ -39,6 +42,10 @@ static const uint16 kDefaultKbdControls[kKeys_Total] = {
   _(SDLK_w), _(SDLK_o), S(SDLK_w), C(SDLK_e),
   // ClearKeyLog, StopReplay, Fullscreen, Reset, Pause, PauseDimmed, Turbo, ReplayTurbo, WindowBigger, WindowSmaller, DisplayPerf, ToggleRenderer
   _(SDLK_k), _(SDLK_l), A(SDLK_RETURN), C(SDLK_r), S(SDLK_p), _(SDLK_p), _(SDLK_TAB), _(SDLK_t), N, N, _(SDLK_f), _(SDLK_r),
+  // VolumeUp, VolumeDown, shader reload/toggle and parameter controls
+  S(SDLK_EQUALS), S(SDLK_MINUS), _(SDLK_F11), _(SDLK_F12), C(SDLK_F11), S(SDLK_F11), C(SDLK_F12), S(SDLK_F12),
+  // Graphics menu, quick save/load, rewind, screenshot, frame advance
+  _(SDLK_ESCAPE), C(SDLK_s), C(SDLK_l), _(SDLK_BACKSPACE), _(SDLK_PRINTSCREEN), _(SDLK_PERIOD),
 };
 #undef _
 #undef A
@@ -59,6 +66,8 @@ static const KeyNameId kKeyNameId[] = {
   S(CheatLife), S(CheatKeys), S(CheatEquipment), S(CheatWalkThroughWalls),
   S(ClearKeyLog), S(StopReplay), S(Fullscreen), S(Reset),
   S(Pause), S(PauseDimmed), S(Turbo), S(ReplayTurbo), S(WindowBigger), S(WindowSmaller), S(VolumeUp), S(VolumeDown), S(DisplayPerf), S(ToggleRenderer),
+  S(ReloadShader), S(ToggleShader), S(ShaderParamPrevious), S(ShaderParamNext), S(ShaderParamDecrease), S(ShaderParamIncrease),
+  S(GraphicsMenu), S(QuickSave), S(QuickLoad), S(Rewind), S(Screenshot), S(FrameAdvance),
 };
 #undef S
 #undef M
@@ -70,6 +79,7 @@ static uint16 keymap_hash_first[255];
 static KeyMapHashEnt *keymap_hash;
 static int keymap_hash_size;
 static bool has_keynameid[countof(kKeyNameId)];
+static uint16 g_control_keyboard[12];
 
 static bool KeyMapHash_Add(uint16 key, uint16 cmd) {
   if ((keymap_hash_size & 0xff) == 0) {
@@ -106,6 +116,19 @@ static int KeyMapHash_Find(uint16 key) {
   return 0;
 }
 
+static void KeyMapHash_RemoveCommand(int cmd, int size) {
+  for (int bucket = 0; bucket < countof(keymap_hash_first); bucket++) {
+    uint16 *p = &keymap_hash_first[bucket];
+    while (*p) {
+      KeyMapHashEnt *ent = &keymap_hash[*p - 1];
+      if (ent->cmd >= cmd && ent->cmd < cmd + size)
+        *p = ent->next;
+      else
+        p = &ent->next;
+    }
+  }
+}
+
 int FindCmdForSdlKey(SDL_Keycode code, SDL_Keymod mod) {
   if (code & ~(SDLK_SCANCODE_MASK | 0x1ff))
     return 0;
@@ -121,6 +144,9 @@ int FindCmdForSdlKey(SDL_Keycode code, SDL_Keymod mod) {
 }
 
 static void ParseKeyArray(char *value, int cmd, int size) {
+  KeyMapHash_RemoveCommand(cmd, size);
+  if (cmd >= kKeys_Controls && cmd <= kKeys_Controls_Last)
+    memset(g_control_keyboard, 0, sizeof(g_control_keyboard));
   char *s;
   int i = 0;
   for (; i < size && (s = NextDelim(&value, ',')) != NULL; i++, cmd += (cmd != 0)) {
@@ -145,6 +171,8 @@ static void ParseKeyArray(char *value, int cmd, int size) {
     }
     if (!KeyMapHash_Add(key_with_mod | REMAP_SDL_KEYCODE(key), cmd))
       fprintf(stderr, "Duplicate key: '%s'\n", s);
+    if (cmd >= kKeys_Controls && cmd <= kKeys_Controls_Last)
+      g_control_keyboard[cmd - kKeys_Controls] = key_with_mod | REMAP_SDL_KEYCODE(key);
   }
 }
 
@@ -157,6 +185,8 @@ static uint16 joymap_first[kGamepadBtn_Count];
 static GamepadMapEnt *joymap_ents;
 static int joymap_size;
 static bool has_joypad_controls;
+static bool has_joypad_graphics_menu;
+static uint32 g_control_gamepad[12];
 
 static int CountBits32(uint32 n) {
   int count = 0;
@@ -186,6 +216,8 @@ static void GamepadMap_Add(int button, uint32 modifiers, uint16 cmd) {
 }
 
 int FindCmdForGamepadButton(int button, uint32 modifiers) {
+  if (button < 0 || button >= kGamepadBtn_Count)
+    return 0;
   GamepadMapEnt *ent;
   for(int e = joymap_first[button]; e != 0; e = ent->next) {
     ent = &joymap_ents[e - 1];
@@ -193,6 +225,19 @@ int FindCmdForGamepadButton(int button, uint32 modifiers) {
       return ent->cmd;
   }
   return 0;
+}
+
+static void GamepadMap_RemoveCommands(int cmd, int size) {
+  for (int button = 0; button < kGamepadBtn_Count; button++) {
+    uint16 *p = &joymap_first[button];
+    while (*p) {
+      GamepadMapEnt *ent = &joymap_ents[*p - 1];
+      if (ent->cmd >= cmd && ent->cmd < cmd + size)
+        *p = ent->next;
+      else
+        p = &ent->next;
+    }
+  }
 }
 
 static int ParseGamepadButtonName(const char **value) {
@@ -224,6 +269,9 @@ static const uint8 kDefaultGamepadCmds[] = {
 };
 
 static void ParseGamepadArray(char *value, int cmd, int size) {
+  GamepadMap_RemoveCommands(cmd, size);
+  if (cmd >= kKeys_Controls && cmd <= kKeys_Controls_Last)
+    memset(g_control_gamepad, 0, sizeof(g_control_gamepad));
   char *s;
   int i = 0;
   for (; i < size && (s = NextDelim(&value, ',')) != NULL; i++, cmd += (cmd != 0)) {
@@ -243,6 +291,8 @@ static void ParseGamepadArray(char *value, int cmd, int size) {
         modifiers |= 1 << button;
       } else if (*ss == 0) {
         GamepadMap_Add(button, modifiers, cmd);
+        if (cmd >= kKeys_Controls && cmd <= kKeys_Controls_Last)
+          g_control_gamepad[cmd - kKeys_Controls] = (uint32)(button + 1) | (modifiers << 8);
         break;
       } else
         goto BAD;
@@ -261,7 +311,16 @@ static void RegisterDefaultKeys() {
   if (!has_joypad_controls) {
     for (int i = 0; i < countof(kDefaultGamepadCmds); i++)
       GamepadMap_Add(kDefaultGamepadCmds[i], 0, kKeys_Controls + i);
+    for (int i = 0; i < countof(kDefaultGamepadCmds); i++)
+      g_control_gamepad[i] = kDefaultGamepadCmds[i] + 1;
   }
+  if (!has_keynameid[1])
+    for (int i = 0; i < 12; i++)
+      g_control_keyboard[i] = kDefaultKbdControls[kKeys_Controls + i];
+  if (!has_joypad_graphics_menu)
+    GamepadMap_Add(kGamepadBtn_L3, 0, kKeys_GraphicsMenu);
+  if (!FindCmdForGamepadButton(kGamepadBtn_R3, 0))
+    GamepadMap_Add(kGamepadBtn_R3, 0, kKeys_FrameAdvance);
 }
 
 static int GetIniSection(const char *s) {
@@ -310,6 +369,32 @@ static bool ParseBoolBit(const char *value, uint32 *data, uint32 mask) {
   return true;
 }
 
+static bool ParseExtendedAspectRatio(const char *value, int height, uint16 *extra_pixels) {
+  if (StringEqualsNoCase(value, "4:3")) {
+    *extra_pixels = 0;
+    return true;
+  }
+
+  char *end;
+  long numerator = strtol(value, &end, 10);
+  if (end == value || *end != ':')
+    return false;
+  char *denominator_end;
+  long denominator = strtol(end + 1, &denominator_end, 10);
+  if (*denominator_end != 0 || numerator <= 0 || denominator <= 0 || numerator > 10000 || denominator > 10000)
+    return false;
+
+  long width = (long)height * numerator / denominator;
+  long extra = (width - 256) / 2;
+  if (extra < 0)
+    extra = 0;
+  if (extra > kPpuMaxExtraLeftRight)
+    return false;
+
+  *extra_pixels = (uint16)extra;
+  return true;
+}
+
 static bool HandleIniConfig(int section, const char *key, char *value) {
   if (section == 0) {
     for (int i = 0; i < countof(kKeyNameId); i++) {
@@ -324,6 +409,8 @@ static bool HandleIniConfig(int section, const char *key, char *value) {
       if (StringEqualsNoCase(key, kKeyNameId[i].name)) {
         if (i == 1)
           has_joypad_controls = true;
+        if (kKeyNameId[i].id == kKeys_GraphicsMenu)
+          has_joypad_graphics_menu = true;
         ParseGamepadArray(value, kKeyNameId[i].id, kKeyNameId[i].size);
         return true;
       }
@@ -350,6 +437,8 @@ static bool HandleIniConfig(int section, const char *key, char *value) {
       return ParseBool(value, &g_config.new_renderer);
     } else if (StringEqualsNoCase(key, "IgnoreAspectRatio")) {
       return ParseBool(value, &g_config.ignore_aspect_ratio);
+    } else if (StringEqualsNoCase(key, "IntegerScaling")) {
+      return ParseBool(value, &g_config.integer_scaling);
     } else if (StringEqualsNoCase(key, "Fullscreen")) {
       g_config.fullscreen = (uint8)strtol(value, (char**)NULL, 10);
       return true;
@@ -374,6 +463,59 @@ static bool HandleIniConfig(int section, const char *key, char *value) {
       return true;
     } else if (StringEqualsNoCase(key, "DimFlashes")) {
       return ParseBoolBit(value, &g_config.features0, kFeatures0_DimFlashes);
+    } else if (StringEqualsNoCase(key, "WidescreenHud")) {
+      return ParseBool(value, &g_config.widescreen_hud);
+    } else if (StringEqualsNoCase(key, "PixelLighting")) {
+      return ParseBool(value, &g_config.pixel_lighting);
+    } else if (StringEqualsNoCase(key, "EnvironmentAnimations")) {
+      return ParseBool(value, &g_config.environment_animations);
+    } else if (StringEqualsNoCase(key, "HeightCues")) {
+      return ParseBool(value, &g_config.height_cues);
+    } else if (StringEqualsNoCase(key, "HudShowHealth")) {
+      return ParseBool(value, &g_config.hud_show_health);
+    } else if (StringEqualsNoCase(key, "HudShowMagic")) {
+      return ParseBool(value, &g_config.hud_show_magic);
+    } else if (StringEqualsNoCase(key, "HudShowRubies")) {
+      return ParseBool(value, &g_config.hud_show_rupees);
+    } else if (StringEqualsNoCase(key, "HudShowKeys")) {
+      return ParseBool(value, &g_config.hud_show_keys);
+    } else if (StringEqualsNoCase(key, "HudPosition")) {
+      if (StringEqualsNoCase(value, "bottom"))
+        g_config.hud_position_bottom = true;
+      else if (StringEqualsNoCase(value, "top"))
+        g_config.hud_position_bottom = false;
+      else
+        return false;
+      return true;
+    } else if (StringEqualsNoCase(key, "AccessibilityProfile")) {
+      int profile = atoi(value);
+      if (profile < 0 || profile > 2) return false;
+      g_config.accessibility_profile = profile;
+      return true;
+    } else if (StringEqualsNoCase(key, "CameraBias")) {
+      int bias = atoi(value);
+      g_config.camera_bias = IntMax(-32, IntMin(32, bias));
+      return true;
+    } else if (StringEqualsNoCase(key, "HDTexturePack")) {
+      int index = atoi(value);
+      if (index < -1 || index > 15) return false;
+      g_config.hd_texture_pack_index = index;
+      return true;
+    } else if (StringEqualsNoCase(key, "HDTexturePackFolder")) {
+      size_t length = strlen(value);
+      if (length >= sizeof(g_config.hd_texture_pack_folder)) return false;
+      for (const char *p = value; *p; p++)
+        if (!((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') ||
+              (*p >= '0' && *p <= '9') || *p == '_' || *p == '-'))
+          return false;
+      snprintf(g_config.hd_texture_pack_folder, sizeof(g_config.hd_texture_pack_folder), "%s", value);
+      return true;
+    } else if (StringEqualsNoCase(key, "GhostTrail")) {
+      return ParseBool(value, &g_config.ghost_trail_enabled);
+    } else if (StringEqualsNoCase(key, "ChallengeTimeLimit")) {
+      return ParseBool(value, &g_config.challenge_time_limit_enabled);
+    } else if (StringEqualsNoCase(key, "ChallengeNoDeath")) {
+      return ParseBool(value, &g_config.challenge_no_death_enabled);
     }
   } else if (section == 2) {
     if (StringEqualsNoCase(key, "EnableAudio")) {
@@ -412,27 +554,23 @@ static bool HandleIniConfig(int section, const char *key, char *value) {
       return true;
     } else if (StringEqualsNoCase(key, "ExtendedAspectRatio")) {
       const char* s;
-      int h = 224;
-      bool nospr = false, novis = false;
-      // todo: make it not depend on the order
+      char *ratio = NULL;
+      bool extend_y = false, nospr = false, novis = false;
       while ((s = NextDelim(&value, ',')) != NULL) {
-        if (strcmp(s, "extend_y") == 0)
-          h = 240, g_config.extend_y = true;
-        else if (strcmp(s, "16:9") == 0)
-          g_config.extended_aspect_ratio = (h * 16 / 9 - 256) / 2;
-        else if (strcmp(s, "16:10") == 0)
-          g_config.extended_aspect_ratio = (h * 16 / 10 - 256) / 2;
-        else if (strcmp(s, "18:9") == 0)
-          g_config.extended_aspect_ratio = (h * 18 / 9 - 256) / 2;
-        else if (strcmp(s, "4:3") == 0)
-          g_config.extended_aspect_ratio = 0;
-        else if (strcmp(s, "unchanged_sprites") == 0)
+        if (StringEqualsNoCase(s, "extend_y"))
+          extend_y = true;
+        else if (strchr(s, ':') != NULL)
+          ratio = (char *)s;
+        else if (StringEqualsNoCase(s, "unchanged_sprites"))
           nospr = true;
-        else if (strcmp(s, "no_visual_fixes") == 0)
+        else if (StringEqualsNoCase(s, "no_visual_fixes"))
           novis = true;
         else
           return false;
       }
+      g_config.extend_y = extend_y;
+      if (ratio && !ParseExtendedAspectRatio(ratio, extend_y ? 240 : 224, &g_config.extended_aspect_ratio))
+        return false;
       if (g_config.extended_aspect_ratio && !nospr)
         g_config.features0 |= kFeatures0_ExtendScreen64;
       if (g_config.extended_aspect_ratio && !novis)
@@ -518,6 +656,18 @@ static bool ParseOneConfigFile(const char *filename, int depth) {
 
 void ParseConfigFile(const char *filename) {
   g_config.msuvolume = 100;  // default msu volume, 100%
+  g_config.widescreen_hud = true;
+  g_config.pixel_lighting = true;
+  g_config.environment_animations = true;
+  g_config.height_cues = true;
+  g_config.hud_show_health = true;
+  g_config.hud_show_magic = false;
+  g_config.hud_show_rupees = true;
+  g_config.hud_show_keys = true;
+  g_config.hud_position_bottom = false;
+  g_config.hd_texture_pack_index = -1;
+  g_config.challenge_time_limit_enabled = true;
+  g_config.challenge_no_death_enabled = true;
 
   if (filename != NULL || !ParseOneConfigFile("zelda3.user.ini", 0)) {
     if (filename == NULL)
@@ -525,5 +675,203 @@ void ParseConfigFile(const char *filename) {
     if (!ParseOneConfigFile(filename, 0))
       fprintf(stderr, "Warning: Unable to read config file %s\n", filename);
   }
+  if (g_config.height_cues)
+    g_config.features0 |= kFeatures0_HeightCues;
+  if (g_config.accessibility_profile == 2)
+    g_config.features0 |= kFeatures0_DimFlashes;
   RegisterDefaultKeys();
+}
+
+const char *Config_GetControlName(int index) {
+  static const char *const names[12] = {
+    "HAUT", "BAS", "GAUCHE", "DROITE", "SELECT", "START",
+    "A", "B", "X", "Y", "L", "R"
+  };
+  return index >= 0 && index < 12 ? names[index] : "?";
+}
+
+const char *Config_GetControlKeyboardName(int index) {
+  static char name[64];
+  if (index < 0 || index >= 12 || !g_control_keyboard[index])
+    return "--";
+  uint16 value = g_control_keyboard[index];
+  int key = value & 0x1ff;
+  SDL_Keycode code = (value & kKeyMod_ScanCode) ? (SDLK_SCANCODE_MASK | key) : key;
+  name[0] = 0;
+  if (value & kKeyMod_Ctrl) strcat(name, "CTRL+");
+  if (value & kKeyMod_Alt) strcat(name, "ALT+");
+  if (value & kKeyMod_Shift) strcat(name, "MAJ+");
+  const char *key_name = SDL_GetKeyName(code);
+  if (!key_name || !*key_name) key_name = "?";
+  strncat(name, key_name, sizeof(name) - strlen(name) - 1);
+  return name;
+}
+
+static const char *Config_GamepadName(int button) {
+  static const char *const names[kGamepadBtn_Count] = {
+    "A", "B", "X", "Y", "Back", "Guide", "Start", "L3", "R3",
+    "L1", "R1", "DpadUp", "DpadDown", "DpadLeft", "DpadRight", "L2", "R2"
+  };
+  return button >= 0 && button < kGamepadBtn_Count ? names[button] : "--";
+}
+
+const char *Config_GetControlGamepadName(int index) {
+  static char name[64];
+  if (index < 0 || index >= 12 || !(g_control_gamepad[index] & 0xff))
+    return "--";
+  uint32 value = g_control_gamepad[index];
+  int button = (value & 0xff) - 1;
+  uint32 modifiers = value >> 8;
+  name[0] = 0;
+  for (int i = 0; i < kGamepadBtn_Count; i++)
+    if (modifiers & (1u << i)) {
+      if (*name) strcat(name, "+");
+      strcat(name, Config_GamepadName(i));
+    }
+  if (*name) strcat(name, "+");
+  strcat(name, Config_GamepadName(button));
+  return name;
+}
+
+bool Config_SetControlKeyboard(int index, SDL_Keycode code, SDL_Keymod mod) {
+  if (index < 0 || index >= 12 || code == SDLK_UNKNOWN)
+    return false;
+  uint16 mapped = REMAP_SDL_KEYCODE(code);
+  if (code != SDLK_LALT && code != SDLK_RALT && (mod & KMOD_ALT)) mapped |= kKeyMod_Alt;
+  if (code != SDLK_LCTRL && code != SDLK_RCTRL && (mod & KMOD_CTRL)) mapped |= kKeyMod_Ctrl;
+  if (code != SDLK_LSHIFT && code != SDLK_RSHIFT && (mod & KMOD_SHIFT)) mapped |= kKeyMod_Shift;
+  int command = kKeys_Controls + index;
+  int existing = KeyMapHash_Find(mapped);
+  int other_index = existing - kKeys_Controls;
+  if (existing && existing != command && (other_index < 0 || other_index >= 12))
+    return false;
+  uint16 previous = g_control_keyboard[index];
+  KeyMapHash_RemoveCommand(command, 1);
+  if (existing && existing != command)
+    KeyMapHash_RemoveCommand(existing, 1);
+  if (!KeyMapHash_Add(mapped, command))
+    return false;
+  g_control_keyboard[index] = mapped;
+  if (existing && existing != command) {
+    g_control_keyboard[other_index] = previous;
+    if (previous)
+      KeyMapHash_Add(previous, existing);
+  }
+  return true;
+}
+
+bool Config_SetControlGamepad(int index, int button) {
+  if (index < 0 || index >= 12 || button < 0 || button >= kGamepadBtn_Count)
+    return false;
+  int command = kKeys_Controls + index;
+  int existing = FindCmdForGamepadButton(button, 0);
+  int other_index = existing - kKeys_Controls;
+  if (existing && existing != command && (other_index < 0 || other_index >= 12))
+    return false;
+  uint32 previous = g_control_gamepad[index];
+  GamepadMap_RemoveCommands(command, 1);
+  if (existing && existing != command)
+    GamepadMap_RemoveCommands(existing, 1);
+  GamepadMap_Add(button, 0, command);
+  g_control_gamepad[index] = button + 1;
+  if (existing && existing != command) {
+    g_control_gamepad[other_index] = previous;
+    if (previous & 0xff)
+      GamepadMap_Add((previous & 0xff) - 1, previous >> 8, existing);
+  }
+  return true;
+}
+
+static bool Config_WriteKeyName(FILE *f, uint16 value) {
+  if (value & kKeyMod_Ctrl) fputs("Ctrl+", f);
+  if (value & kKeyMod_Alt) fputs("Alt+", f);
+  if (value & kKeyMod_Shift) fputs("Shift+", f);
+  int key = value & 0x1ff;
+  SDL_Keycode code = (value & kKeyMod_ScanCode) ? (SDLK_SCANCODE_MASK | key) : key;
+  const char *name = SDL_GetKeyName(code);
+  if (!name || !*name) return false;
+  for (const char *p = name; *p; p++)
+    fputc((*p >= 'A' && *p <= 'Z') ? (*p + ('a' - 'A')) : *p, f);
+  return true;
+}
+
+static void Config_WriteGamepadName(FILE *f, uint32 value) {
+  if (!(value & 0xff))
+    return;
+  int button = (value & 0xff) ? (value & 0xff) - 1 : -1;
+  uint32 modifiers = value >> 8;
+  bool first = true;
+  for (int i = 0; i < kGamepadBtn_Count; i++)
+    if (modifiers & (1u << i)) {
+      if (!first) fputc('+', f);
+      fputs(Config_GamepadName(i), f);
+      first = false;
+    }
+  if (!first) fputc('+', f);
+  fputs(Config_GamepadName(button), f);
+}
+
+bool Config_SaveUserSettings(void) {
+  const char *filename = "zelda3.user.ini";
+  const char *temporary = "zelda3.user.ini.tmp";
+  const char *begin_marker = "# BEGIN ZELDA3 RUNTIME SETTINGS";
+  const char *end_marker = "# END ZELDA3 RUNTIME SETTINGS";
+  size_t old_length = 0;
+  char *old_data = (char*)ReadWholeFile(filename, &old_length);
+  if (!old_data) old_data = (char*)calloc(1, 1);
+  if (!old_data) return false;
+  char *begin = strstr(old_data, begin_marker);
+  char *end = begin ? strstr(begin, end_marker) : NULL;
+  if (begin && end) {
+    end += strlen(end_marker);
+    if (*end == '\r') end++;
+    if (*end == '\n') end++;
+    memmove(begin, end, strlen(end) + 1);
+    old_length = strlen(old_data);
+  }
+  bool has_include = strstr(old_data, "!include") != NULL;
+  FILE *f = fopen(temporary, "wb");
+  if (!f) { free(old_data); return false; }
+  if (!has_include)
+    fputs("!include \"zelda3.ini\"\n\n", f);
+  if (old_length)
+    fwrite(old_data, 1, old_length, f);
+  if (old_length && old_data[old_length - 1] != '\n') fputc('\n', f);
+  fprintf(f, "%s\n[General]\nLanguage = %s\n\n[Graphics]\n",
+          begin_marker, g_config.language ? g_config.language : "us");
+  fprintf(f, "WidescreenHud = %d\nPixelLighting = %d\nEnvironmentAnimations = %d\nHeightCues = %d\nIntegerScaling = %d\n",
+          g_config.widescreen_hud, g_config.pixel_lighting, g_config.environment_animations,
+          g_config.height_cues, g_config.integer_scaling);
+  fprintf(f, "HudShowHealth = %d\nHudShowMagic = %d\nHudShowRubies = %d\nHudShowKeys = %d\nHudPosition = %s\n",
+          g_config.hud_show_health, g_config.hud_show_magic, g_config.hud_show_rupees,
+          g_config.hud_show_keys, g_config.hud_position_bottom ? "bottom" : "top");
+  fprintf(f, "AccessibilityProfile = %u\nCameraBias = %d\nHDTexturePack = %d\nHDTexturePackFolder = %s\nGhostTrail = %d\n",
+          (unsigned int)g_config.accessibility_profile, g_config.camera_bias, g_config.hd_texture_pack_index,
+          g_config.hd_texture_pack_folder, g_config.ghost_trail_enabled);
+  fprintf(f, "ChallengeTimeLimit = %d\nChallengeNoDeath = %d\n\n",
+          g_config.challenge_time_limit_enabled, g_config.challenge_no_death_enabled);
+  fprintf(f, "DimFlashes = %d\n", (g_config.features0 & kFeatures0_DimFlashes) != 0);
+  fputs("[KeyMap]\nControls = ", f);
+  for (int i = 0; i < 12; i++) {
+    if (i) fputs(", ", f);
+    if (g_control_keyboard[i]) Config_WriteKeyName(f, g_control_keyboard[i]);
+  }
+  fputs("\n\n[GamepadMap]\nControls = ", f);
+  for (int i = 0; i < 12; i++) {
+    if (i) fputs(", ", f);
+    Config_WriteGamepadName(f, g_control_gamepad[i]);
+  }
+  fprintf(f, "\n%s\n", end_marker);
+  bool ok = ferror(f) == 0;
+  if (fclose(f) != 0) ok = false;
+#ifdef _WIN32
+  if (ok)
+    ok = MoveFileExA(temporary, filename, 0x1 | 0x8) != 0;
+#else
+  if (ok)
+    ok = rename(temporary, filename) == 0;
+#endif
+  if (!ok) remove(temporary);
+  free(old_data);
+  return ok;
 }

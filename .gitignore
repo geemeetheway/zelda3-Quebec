@@ -14,8 +14,14 @@
 /zelda3.sfc
 /zelda3.smc
 /saves/*.sav
+/saves/*.sav.bak*
+/saves/*.tmp
+/saves/labels.ini
+/saves/*.bmp
 /saves/sram.dat
 /saves/sram.bak
+/screenshots/
+/user_data/
 /zelda3
 __pycache__
 /src/*.o
@@ -31,3 +37,10 @@ __pycache__
 /sprites-gfx
 /glsl-shaders
 /token.txt
+/roms/*.sfc
+/roms/*.smc
+/tables/
+/third_party/SDL2/
+/assets/dialogue_fr.txt
+/assets/font_fr.png
+/localization/dialogue-preview.html

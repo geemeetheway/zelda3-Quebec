@@ -203,7 +203,12 @@ void GlslShader_ReadShaderFile(GlslShader *gs, const char *filename, ByteArray *
         param->value = value;
       param->min = atof(NextPossiblyQuotedString(&tt));
       param->max = atof(NextPossiblyQuotedString(&tt));
-      // skip step
+      const char *step = NextPossiblyQuotedString(&tt);
+      param->step = step ? (float)atof(step) : 0.0f;
+      if (param->step < 0.0f)
+        param->step = -param->step;
+      if (param->step == 0.0f && param->max > param->min)
+        param->step = (param->max - param->min) / 100.0f;
     } else {
       line[linelen] = '\n';
       ByteArray_AppendData(result, (uint8 *)line, linelen + 1);
@@ -614,7 +619,7 @@ void GlslShader_Render(GlslShader *gs, GlTextureWithSize *tex, int viewport_x, i
 
     glBindTexture(GL_TEXTURE_2D, p[-1].gl_texture);
 
-    uint filter = p->filter ? p->filter : (last_pass && g_config.linear_filtering) ? GL_LINEAR : GL_NEAREST;
+    uint filter = p->filter ? p->filter : (last_pass && g_config.linear_filtering && !g_config.integer_scaling) ? GL_LINEAR : GL_NEAREST;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, p->mipmap_input ? 
                     (filter == GL_LINEAR ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST) : filter);

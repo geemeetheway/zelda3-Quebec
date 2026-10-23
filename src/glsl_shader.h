@@ -76,6 +76,7 @@ typedef struct GlslParam {
   float value;
   float min;
   float max;
+  float step;
   uint uniform[kGlslMaxPasses];
 } GlslParam;
 

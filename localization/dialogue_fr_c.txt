@@ -1,0 +1,397 @@
+1: 
+2: [Speed 00][3]  [2]>[Choose]
+3: [Speed 00][2]  [3]>[Choose]
+4: SAUVEGARDER ET CONTINUER.[2]SAUVEGARDER ET QUITTER.[3]CONTINUER SANS SAUVEGARDER.
+5: [Speed 00]0- [Number 00]. 1- [Number 01][2]2- [Number 02]. 3- [Number 03]
+6: Pas question que j'te laisse[2]passer avec moi!
+7: [Speed 00][1]>[2]  [3]  [Choose3]
+8: [Speed 00][1]  [2]>[3]  [Choose3]
+9: [Speed 00][1]  [2]  [3]>[Choose3]
+10: [Speed 00][1]>[2]  [Choose2]
+11: [Speed 00][1]  [2]>[Choose2]
+12: [Speed 00][3]    [2]  >[Selchg]
+13: [Speed 00][2]    [3]  >[Selchg]
+14: J'pars faire un p'tit tour.[2]J'reviens demain. Sors pas[3]de la maison! Inquiete-toi pas![Waitkey][Scroll]
+15: Ah! [Name], j'voulais pas[2]que tu te retrouves mele a ca.[3]J't'avais dit de rester a la[Waitkey][Scroll]maison. Prends mon epee, mon[Scroll]bouclier, pis ecoute-moi bien.[Scroll]Pour mettre toute la[Waitkey][Scroll]puissance dans ton epee, garde[Scroll]le bouton [B] enfonce, pis[Scroll]relache-le avec la[Waitkey][Scroll]technique secrete que notre[Scroll]peuple nous a transmise. [Name][Scroll]Tu... peux... y arriv...er! Sauve[Waitkey][Scroll]la Princ... Zeld... T'es son...[Scroll]seul espoir...
+16: Qu'est-ce tu fais debout a c'te[2]heure-la? T'es trop p'tit[3]pour veiller aussi tard![Waitkey][Scroll]Allez, rentre donc a maison!
+17: Si tu te perds, pese sur le[2]bouton [X] pour ouvrir la[3]carte.[Waitkey][Scroll]T'as compris?
+18: T'as l'air fort en maudit pour[2]un enfant. Combien tu peux[3]soulever? Pese sur le[Waitkey][Scroll]bouton [A] en touchant a un[Scroll]objet pour le lever.
+19: J'suis sur que t'as le gout[2]d'essayer une epee![3]Quand t'en auras une,[Waitkey][Scroll]pese sur le bouton [B][Scroll]pour t'en servir.
+20: La marque qui brille sur la[2]carte te montre ou aller.
+21: Y'a souvent des tresors dans[2]les coffres.[3]Quand t'es devant un coffre,[Waitkey][Scroll]pese sur le bouton [A][Scroll]pour l'ouvrir.
+22: Viens nous parler, tu vas[2]apprendre tout plein d'affaires![3]Tu vas comprendre plus tard!
+23: Va voir le Sage du village.[2]Apres ca, trouve Excalibur.
+24: Princesse Zelda, vous etes[2]encore en vie! [Name], c'est toi[3]qui l'as sauvee?
+25: J'ai peur qu'une force[2]malefique soit derriere les gestes[3]du sorcier et augmente ses[Waitkey][Scroll]pouvoirs magiques. La seule arme[Scroll]assez puissante pour le battre,[Scroll]c'est l'epee legendaire[Waitkey][Scroll]Excalibur. La legende dit qu'un[Scroll]des Sages du village descend[Scroll]d'un des Sept Sages.[Waitkey][Scroll]Il pourra peut-etre t'en dire[Scroll]plus. J'vais marquer sa maison[Scroll]sur ta carte. Mais fais[Waitkey][Scroll]attention: les soldats du chateau[Scroll]vont tout faire pour te[Scroll]retrouver! Je vais cacher[Waitkey][Scroll]la princesse Zelda ici.[Scroll][Sound 45]T'inquiete pas![Scroll]Va trouver le Sage![Waitkey][Scroll]T'as [Waitkey][Scroll]compris?[Scroll]> Oui.[Scroll]   Non, rien pantoute.[Choose]
+26: Si tu bats le sorcier, les[2]soldats vont peut-etre[3]retrouver leurs esprits.[Waitkey][Scroll]Pars a la recherche des[Scroll]Pendentifs!
+27: Apporte les 3 Pendentifs dans[2]les Bois Perdus. C'est la que[3]l'epee Excalibur t'attend.
+28: [Name], t'es arrive une[2]minute trop tard. J'ai echoue![3]Les soldats l'ont enlevee. Ils[Waitkey][Scroll]l'ont surement amenee dans la[Scroll]plus haute tour du chateau.[Scroll]Tu dois la retrouver avant que[Waitkey][Scroll]le sorcier finisse son[Scroll]sortilege et la sacrifie.[Scroll]J't'en prie, t'es[Waitkey][Scroll]mon seul espoir...
+29: Merci, [Name]. Je sentais[2]bien que tu t'en venais.
+30: Oui, c'est [Name] qui m'a[2]aidee a sortir du donjon![3]Quand j'etais prisonniere, le[Waitkey][Scroll]sorcier a dit: "Quand j'aurai[Scroll]fini avec toi, ma derniere[Scroll]victime, le sceau des Sages[Waitkey][Scroll][Scroll]va s'ouvrir." [Name], laisse[Scroll]pas le sorcier prendre le pays[Waitkey][Scroll]d'Hyrule. S'il ouvre le sceau[Scroll]des Sept Sages, une force[Scroll]demoniaque va s'emparer[Waitkey][Scroll]de ces terres.[Scroll]Avant qu'il [Scroll]soit trop tard,[Waitkey][Scroll]bats le sorcier pour[Scroll]l'empecher de detruire Hyrule.[Scroll]Tu vas reussir! J'en suis sure!
+31: [Name], fais attention a toi![2]Je sais que tu peux[3]sauver Hyrule.
+32: [Window 02][Speed 03]A l'aide![Wait 01][2]A l'aide![Waitkey][Scroll]J'suis prisonniere dans le[Scroll]donjon du chateau.[Scroll]Je m'appelle Zelda. Le sorcier[Waitkey][Scroll]Agahnim a ensorcele les autres[Scroll]jeunes filles enlevees. Il[Scroll]reste juste moi. Agahnim a[Waitkey][Scroll]pris le controle du chateau et[Scroll]essaie maintenant d'ouvrir le[Scroll]sceau des Sept Sages.[Waitkey][Scroll]J'suis dans le donjon du[Scroll]chateau. Aidez-moi!
+33: [Window 02][Speed 03]A l'aide![2]J'suis dans le donjon du[3]chateau.[Waitkey][Scroll]Y'a une allee secrete juste[Scroll]a cote du chateau qui mene[Scroll]jusqu'au jardin[Waitkey][Scroll] interieur.
+34: Y'a un passage secret dans[2]la salle du trone qui mene au[3]Sanctuaire.[Waitkey][Scroll]Je suis sure que le maitre du[Scroll]Sanctuaire va nous aider.
+35: Ce blason doit s'ouvrir en[2]glissant. T'as la lanterne?[3]Elle va etre indispensable: il[Waitkey][Scroll]fait pas mal noir la-dedans.[Scroll]Si t'es pret, on y va.[Scroll]Pousse le blason par la gauche[Waitkey][Scroll]pour m'aider!
+36: Faut tirer le levier pour[2]ouvrir la porte. Appuie sur[3]le bouton [A] et pousse la[Waitkey][Scroll]manette vers le bas.
+37: Faut partir avant que le[2]sorcier remarque qu'on s'en va.[3]Je connais un passage secret,[Waitkey][Scroll]mais faut d'abord monter[Scroll]au rez-de-chaussée.
+38: [Name], ecoute-moi bien.[2]Le sorcier Agahnim a ensorcele[3]tous les soldats du chateau.[Waitkey][Scroll]J'ai peur pour mon pere. Ce[Scroll]sorcier-la est un monstre[Scroll]cruel avec des pouvoirs[Waitkey][Scroll]magiques terrifiants.[Scroll]T'as [Waitkey][Scroll]compris?[Scroll]> Oui![Scroll]   Non, pantoute![Choose]
+39: Suis les marques que le Sage[2]a mises sur ta carte[3]pendant tes explorations.[Waitkey][Scroll]Si tu sais plus quoi faire,[Scroll]tu peux aller [Scroll]voir le voyant.
+40: [Name], t'es incroyable![2]J'me disais bien que t'avais[3]l'ame d'un heros.[Waitkey][Scroll]Maintenant, trouve Excalibur.[Scroll]J'suis sure que [Scroll]tu vas battre[Waitkey][Scroll]le mechant sorcier!
+41: [Window 02][Speed 03][Name]! A l'aide! Les soldats[2]s'en vont au Sanctuaire![3]Aieeeee...!
+42: Une fois sortis de ces egouts,[2]on va etre tout pres[3]du Sanctuaire![Waitkey][Scroll]Restons prudents!
+43: Le Sanctuaire est juste[2]derriere cette porte.[3]Tire le levier vers toi, la.
+44: Ah, c'est toi, [Name]![2]Qu'est-ce que je peux faire pour[3]toi, jeune homme? ... Le Sage?[Waitkey][Scroll]Oh, personne l'a vu depuis que[Scroll]le sorcier a commence a[Scroll]enlever du monde.[Waitkey][Scroll]... Excalibur? Bon, j'me[Scroll]rappelle pas tres bien, mais...
+45: Y'a longtemps, un peuple[2]prospere qu'on appelait les[3]Hyliens vivait sur ces terres.[Waitkey][Scroll]Les legendes parlent de[Scroll]plein de tresors que les[Scroll]Hyliens auraient caches[Waitkey][Scroll]partout dans le pays. L'epee[Scroll]Excalibur, forgee pour vaincre[Scroll]de terribles ennemis, est un[Waitkey][Scroll]de ces tresors.[Scroll]On dit qu'elle [Scroll]repose dans la[Waitkey][Scroll]foret maintenant.[Waitkey][Scroll]T'as compris la legende?[Scroll]> Oui.[Scroll]   Non, pantoute.[Choose]
+46: En tout cas, trouve[2]le Sage. Y'a surement quelqu'un[3]au village qui sait ou il est.[Waitkey][Scroll]Fais attention[Scroll] a toi, [Name].
+47: Oh! T'as change![2]T'as l'air magnifique. S'il[3]te plait, sauve-nous de ce[Waitkey][Scroll]pouvoir diabolique!
+48: He! Voila [Name], le gars[2]qu'on recherche! Soldats! Vite![3]Venez par ici!
+49: Incroyable! T'as recupere[2]les 3 Pendentifs. Maintenant,[3]va dans les Bois Perdus.[Waitkey][Scroll]Si t'es vraiment le heros,[Scroll]l'epee va te choisir elle-meme.
+50: J'suis trop vieux pour[2]me battre. T'es mon seul[3]espoir!
+51: C'est bien moi, Sahasrahla,[2]le Sage du village, un des[3]descendants des Sept Sages.[Waitkey][Scroll]J'suis surpris, [Name], qu'un[Scroll]jeune gars comme toi cherche[Scroll]l'épée du Diable![Waitkey][Scroll]Cette arme-là est pas faite[Scroll]pour n'importe qui.[Scroll]La légende transmise par les[Waitkey][Scroll]Hyliens dit que seul le héros[Scroll]qui a trouvé les 3 Penden-[Scroll]tifs peut manier cette épée.[Waitkey][Scroll]Tu veux vraiment la trouver?[Scroll]> Euh...[Scroll]   Ben oui![Choose]
+52: Parfait. Pour faire un test,[2]peux-tu trouver le Pendentif[3]du Courage au Palais de l'Est?[Waitkey][Scroll]Rapporte-le-moi, pis j't'en[Scroll]dirai plus sur la legende et[Scroll]j'te donnerai un objet magique.[Waitkey][Scroll][Sound 45]Allez, va au Palais!
+53: D'autres descendants des Sept[2]Sages se cachent des gens du[3]chateau. Essaie de[Waitkey][Scroll]les trouver.
+54: [Window 02][Speed 03][Name], c'est moi, Sahasrahla.[2]J'te parle par telepathie[3]a travers le vide.[Waitkey][Scroll]L'endroit ou t'es etait la[Scroll]Terre d'Or, mais une force[Scroll]malefique l'a transformee en[Waitkey][Scroll]Monde des Tenebres. Le sorcier[Scroll]a brise le sceau des Sages et[Scroll]ouvert un passage entre le[Waitkey][Scroll]Monde des Tenebres et le Monde[Scroll]de la Lumiere, a l'entree du[Scroll]chateau d'Hyrule.[Waitkey][Scroll]Pour sauver le Monde de la[Scroll]Lumiere, tu dois reprendre le[Scroll]Pouvoir d'Or. Tu dois aussi[Waitkey][Scroll]sauver les sept jeunes filles[Scroll]qu'Agahnim a envoyees dans le[Scroll]Monde des Tenebres. Elles[Waitkey][Scroll]descendent des Sages et leurs[Scroll]pouvoirs vont surement t'aider.[Scroll]Elles sont enfermees dans des[Waitkey][Scroll]donjons caches, pleins de[Scroll]monstres et de pieges.[Scroll]Va au Palais[Waitkey][Scroll] des [Scroll]Tenebres![Scroll][Sound 45][Name], t'es mon seul espoir![Waitkey][Scroll]Realise mon reve![Scroll]J't'en supplie!
+55: [Window 02][Speed 03]Sous cette forme, tu peux[2]rien faire. Va chercher[3]la Perle de Lune dans la Tour[Waitkey][Scroll]d'Hera.[Scroll]Elle va te proteger de la magie[Scroll]du Monde des Tenebres[Waitkey][Scroll]et te redonner ta carrure[Scroll]de heros.
+56: Y'a un objet super utile[2]cache dans la grotte a l'est[3]du lac Hylia. Va le chercher!
+57: Oh, t'as le Pendentif du[2]Courage! J'vais t'en dire[3]plus sur la legende.[Waitkey][Scroll]Y'a longtemps, un ordre de[Scroll]chevaliers protegeait[Scroll]le royaume d'Hyrule. Ces[Waitkey][Scroll]chevaliers etaient aussi les[Scroll]gardiens du Pendentif du[Scroll]Courage. Malheureusement,[Waitkey][Scroll]la plupart sont morts pendant[Scroll]la grande guerre contre le[Scroll]Demon, quand les Sept Sages[Waitkey][Scroll]ont cree leur sceau. Un heros[Scroll]doit sortir des descendants[Scroll]des chevaliers d'Hyrule.[Waitkey][Scroll]J'ai confiance en [Scroll]toi,[Name].[Scroll]Va chercher les autres[Waitkey][Scroll]Pendentifs. Prends ca aussi.[Scroll]C'est un tresor transmis[Scroll]dans les familles des Sept[Waitkey][Scroll]Sages. Je veux[Scroll] que tu l'aies.
+58: C'est bien moi, Sahasrahla,[2]le Sage du village, un des[3]descendants des Sept Sages. Je[Waitkey][Scroll]suis surpris, [Name], qu'un[Scroll]jeune gars comme toi puisse[Scroll]chercher l'épée du Diable.[Waitkey][Scroll]Cette arme-là est pas donnée[Scroll]à tout le monde.[Scroll]La légende des Hyliens dit[Waitkey][Scroll]que seul le héros qui a[Scroll]vaincu les trois monstres et[Scroll]gagné les trois Pendentifs[Waitkey][Scroll]peut manier l'épée.[Scroll]Je vois que t'as trouvé le[Scroll]Pendentif du Cou-[Waitkey][Scroll]rage. J'vais te raconter la[Scroll]légende qui va avec.[Scroll]Y'a très longtemps, un ordre[Waitkey][Scroll]de chevaliers protégeait[Scroll]le royaume hylien.[Scroll]Ces chevaliers[Waitkey][Scroll]d'Hyrule gardaient aussi[Scroll]le Pendentif du Courage.[Scroll]Malheureusement, la plupart[Waitkey][Scroll]ont été déci-[Scroll]més pendant la grande guerre[Scroll]contre le Démon, qui a éclaté[Waitkey][Scroll]quand les Sept Sages ont créé[Scroll]leur sceau. Un héros doit[Scroll]sortir des descendants[Waitkey][Scroll]des chevaliers d'Hyrule. Ben. [Name],[Scroll]j'pense que c'est toi![Scroll]Va chercher les autres[Waitkey][Scroll]Pendentifs.[Scroll]Prends ça avec toi. C'est un[Scroll]trésor transmis dans les[Waitkey][Scroll]familles des Sept Sages. Je[Scroll]veux que tu l'aies.
+59: J'offre 100 rubis a celui[2]qui retrouvera les jeunes[3]filles descendantes des Sept Sages.[Waitkey][Scroll]Signe: LE ROI.
+60: RECHERCHE. [LinkL][LinkR] C'est le[2]criminel qui a enleve Zelda.[3]Prevenez un soldat si vous le voyez.
+61: DANGER![2]Entrez pas[3]dans la Montagne de la Mort!
+62: [2]Direction: [UpL][UpR] Bois Perdus
+63: DANGER![2]    Attention aux eaux[3]    profondes et a Zora!
+64: Bienvenue a la Boutique[2]Magique! La Cascade des[3]Voeux est juste apres.
+65: Cette grotte mene a l'allee[2]qui aboutit au village[3]de Cocorico.
+66: Direction: [DownL][DownR] Lac Hylia[3]   Y'a aussi une boutique.
+67: Direction: [LeftL][LeftR][2]     Village de Cocorico
+68: Direction: [LeftL][LeftR][2]    Desert du Mystere.[3]    Attention aux mines!
+69: Direction: [UpL][UpR] [RightL][RightR][2]  Boutique Magique.[3]  Plus loin, la Cascade des Voeux.
+70: Direction: [RightL][RightR] Palais de l'Est[3]              [LeftL][LeftR] Chateau d'Hyrule
+71: [2]           Lac Hylia
+72: Me parle pas![2]Laisse-moi tranquille![3]J'suis un vieux grincheux.[Waitkey][Scroll]Prends pas mon affiche!
+73:     La Cabane des Bûcherons[2]        M. Bing et M. Bang.
+74: Direction: [DownL][DownR][2]     Village de Cocorico
+75: Champignons mignons![2]Champignons, mignons![3]Un elixir magique aux[Waitkey][Scroll]champignons de Paris.
+76: Ha! Ha! Merci, jeune homme.[2]Repasse a la Boutique Magique[3]plus tard, j'aurai de quoi[Waitkey][Scroll]te regaler! Ah! Ah! Ah!
+77: Miam! Ca sent le fruit[2]pourri. Donne-moi ce[3]champignon, j'vais finir mon[Waitkey][Scroll]plat. Ah! Ah! Ah! Ah!
+78: Pour avoir une potion,[2]faut apporter une bouteille[3]pour la mettre dedans. Ah! Ah! Ah!
+79: L'elixir rouge redonne la vie.[2]Le vert redonne de la magie.[3]Le bleu redonne les deux.[Waitkey][Scroll]Goute un peu a cette potion[Scroll]rouge! Ah! Ah! Ah!
+80: Sans bouteille magique,[2]tu peux pas acheter[3]de potion.[Waitkey][Scroll]Ah! Ah! Ah! Ah!
+81: Non, non, non! J'peux[2]rien mettre dans une[3]bouteille deja pleine. Ah! Ah! Ah!
+82: T'as la lanterne![2]Maintenant, tu peux allumer[3]les torches en pesant[Waitkey][Scroll]sur le bouton [Y]. Ca va[Scroll]t'aider a voir dans le noir.
+83: T'as le boomerang! Essaie-le![2]Pour choisir un objet,[3]appuie sur Start.
+84: T'as trouve l'arc! Tu peux[2]tirer des fleches jusqu'a[3]ce qu'il en reste plus.
+85: T'as emprunte une pelle![2]Tu peux creuser a bien des[3]endroits. Qui sait ce que tu[Waitkey][Scroll]vas trouver!
+86: C'est la cape magique![2]Quand tu la portes, tu[3]deviens invisible! Surveille[Waitkey][Scroll]ton compteur de magie!
+87: C'est la poudre magique![2]Saupoudre-en sur tes ennemis[3]et sur plein d'autres choses!
+88: T'as achete les palmes de[2]Zora! Tu vas pouvoir[3]nager en eau profonde.
+89: T'as le gant de puissance![2]Tu dois sentir la force[3]dans tes mains![Waitkey][Scroll]Tu peux maintenant ramasser[Scroll]et transporter des roches!
+90: T'as gagne le Pendentif du[2]Courage! Apporte-le a[3]Sahasrahla. Il en reste[Waitkey][Scroll]encore deux!
+91: T'as gagne le Pendentif du[2]Pouvoir! Tu te rapproches[3]de ton but: trouver les[Waitkey][Scroll]trois Pendentifs.[Scroll]Pars chercher le dernier!
+92: T'as gagne le Pendentif de[2]Sagesse! Bravo! T'as les[3]trois Pendentifs![Waitkey][Scroll]Pars maintenant dans[Scroll]les Bois Perdus pour[Scroll]trouver Excalibur.
+93: Ce champignon sent[2]le fruit pas mal pourri.[3]Donne-le a quelqu'un qui en veut.[Waitkey][Scroll]Choisis-le, puis[Scroll]appuie sur le bouton [Y].
+94: T'as trouve le Livre de[2]Mudora! Il te permet de[3]lire l'ancienne langue[Waitkey][Scroll]des Hyliens.
+95: T'as trouve la Perle de Lune![2]Elle protege le heros des[3]effets bizarres du[Waitkey][Scroll]Pouvoir d'Or!
+96: T'as trouve la boussole![2]Elle va t'aider a trouver[3]la cachette du maitre[Waitkey][Scroll]du donjon.
+97: T'as le plan! Sers-t'en[2]pour voir ou t'es[3]et le reste du donjon.[Waitkey][Scroll]Appuie sur [X].
+98: T'as trouve la baguette de[2]glace! Ses bourrasques[3]magiques gelent tout.[Waitkey][Scroll]Mais surveille ton compteur[Scroll]de magie!
+99: T'as trouve la baguette de[2]feu! Elle commande les flammes![3]Surveille ton compteur[Waitkey][Scroll]de magie!
+100: C'est le medaillon d'Ether![2]Ses pouvoirs magiques[3]controlent l'atmosphere[Waitkey][Scroll]et le vent polaire![Scroll]Surveille ton compteur[Scroll]de magie!
+101: C'est le medaillon des Flammes![2]Ses pouvoirs magiques font[3]exploser le sol![Waitkey][Scroll]Surveille ton compteur[Scroll]de magie!
+102: C'est le medaillon des[2]Secousses! Ses pouvoirs[3]font trembler la terre et[Waitkey][Scroll]abattent les ennemis[Scroll]dans les alentours.[Scroll]Surveille ton compteur[Waitkey][Scroll]de magie!
+103: T'as le marteau magique![2]Tu peux enfoncer les piquets[3]de bois dans le sol![Waitkey][Scroll]Tu peux aussi l'utiliser pour[Scroll]ecraser d'autres objets.
+104: Oh! C'est la flute![2]Sa musique a surement[3]un pouvoir mysterieux!
+105: T'as la canne de Somaria![2]Elle est super utile[3]si tu sais t'en servir![Waitkey][Scroll]Toute une canne, hein?
+106: CLING! C'est le grappin![2]Il s'allonge, se retracte,[3]et CLING! Il peut s'accrocher[Waitkey][Scroll]a toutes sortes d'objets!
+107: T'as des bombes![2]Tu peux ramasser et lancer[3]celle que t'as posee.[Waitkey][Scroll]Appuie sur [A].
+108: C'est la bouteille magique![2]Tu peux y garder un[3]objet pour t'en servir[Waitkey][Scroll]plus tard.
+109: T'as la grande cle![2]Elle ouvre les serrures[3]que les petites cles[Waitkey][Scroll]peuvent pas ouvrir.
+110: T'as le gant du Titan! Tu[2]peux maintenant soulever[3]les grosses roches noires[Waitkey][Scroll]qui bougeaient pas[Scroll] avant.
+111: Il t'a donne le miroir magique![2]C'est un beau miroir bleu[3]transparent![Waitkey][Scroll]On dirait qu'il va nous[Scroll]aspirer dans un autre[Scroll]monde.
+112: La voila! L'epee Excalibur![2]... Zut! C'est pas la bonne![3]C'est donc ben plate!
+113: [Window 02][Speed 03]Sahasrahla te contacte[2]soudain par telepathie.[3][Name], c'est merveilleux que[Waitkey][Scroll]t'aies trouve Excalibur.[Scroll]Son eclat fait reculer le[Scroll]Demon. Avec cette epee qui[Waitkey][Scroll]brille, tu peux peut-etre[Scroll]repousser la magie malefique[Scroll]du sorcier.[Waitkey][Scroll]Le sort de ces terres[Scroll]est entre tes mains.[Scroll]J't'en prie, [Name]!
+114: Ah! Ah! Ah! Ah! Merci![2]Voici l'elixir de vie.[3]Sers-t'en pour retrouver[Waitkey][Scroll]ton energie.
+115: Ah! Ah! Ah! Ah! Merci![2]Voici l'elixir de magie.[3]Il va recharger ton[Waitkey][Scroll]energie magique.
+116: Ah! Ah! Ah! Ah! Merci![2]Voici l'elixir de vie et[3]de magie! Tu recuperes[Waitkey][Scroll]les deux en meme temps!
+117: T'as emprunte le filet a[2]papillons! Tu pourrais aussi[3]t'en servir pour attraper[Waitkey][Scroll]d'autres affaires.
+118: T'as trouve la cotte de mailles[2]bleue! Elle reduit les[3]degats que te font[Waitkey][Scroll]les ennemis.
+119: T'as trouve la cotte de mailles[2]rouge! Elle te protege[3]encore mieux que la[Waitkey][Scroll]cotte de mailles bleue!
+120: Super! Ton epee est plus[2]puissante! Sens cette force[3]incroyable dans tes[Waitkey][Scroll]veines.
+121: T'as trouvé le bouclier[2]miroir! Il peut maintenant[3]renvoyer les rayons que ton[Waitkey][Scroll]ancien bouclier bloquait pas.
+122: T'as la canne de Byrna![2]Quand tu t'en sers, une aura[3]de lumière te protège!
+123: Hein? C'est barré à clé![2]Avec la grande clé, tu[3]pourrais ouvrir ça.
+124: T'as plus de magie![2]Tu peux pas utiliser[3]cet objet pour l'instant.
+125: Il t'a donné les bottes de[2]Pégase. Tu peux maintenant[3]faire une attaque-éclair[Waitkey][Scroll]dévastatrice! Garde le bouton[Scroll][A][Scroll] enfoncé un p'tit moment.
+126: Wow! Ca fait des siècles que[2]j'ai pas croisé quelqu'un de[3]normal! Laisse-moi te jaser[Waitkey][Scroll]un peu!
+127: Tu connais la statue de la[2]gargouille au village? On dit[3]qu'une femme appelle à l'aide[Waitkey][Scroll]en dessous. C'est pas une drôle[Scroll]d'histoire,[Scroll] ça?
+128: C'est dur à croire, mais la[2]Triforce a créé ce monde pour[3]exaucer le voeu de Ganon.[Waitkey][Scroll][Scroll]Tu sais ce qu'il veut, Ganon?[Scroll]Diriger tout l'Univers![Waitkey][Scroll]Avec la magie du Monde des[Scroll]Ténèbres, il pourrait bien[Scroll]y arriver.
+129: Avant, j'habitais dans les[2]Bois Perdus. Un jour, j'suis[3]entré dans un téléporteur[Waitkey][Scroll]magique. J'me suis retrouvé[Scroll]dans cette forêt des[Scroll]Squelettes. J'pense que les[Waitkey][Scroll]deux forêts sont[Scroll] reliées.
+130: J'ai entendu dire que les[2]bombes sont le meilleur truc[3]pour battre les Hinox.[Waitkey][Scroll]C'est tout ce que j'sais!
+131: Lâche-moi! Pis regarde où[2]tu t'en vas quand tu fonces,[3]tête baissée!
+132: T'as eu le Pendentif du[2]Pouvoir! Bravo, t'as les[3]trois Pendentifs![Waitkey][Scroll]Va dans les Bois Perdus[Scroll]pour trouver Excalibur!
+133: T'as eu le Pendentif[2]de Sagesse! Ta force[3]augmente![Waitkey][Scroll]Trouve vite le dernier!
+134: Venez essayer votre adresse[2]dans ma salle de tir![3]Cinq tirs pour 20 rubis.[Waitkey][Scroll]Si vous êtes aussi bons que[Scroll]vous en avez l'air, vous allez[Scroll]repartir avec plein de rubis.[Waitkey][Scroll]Ca vous tente?[Scroll]> J'embarque.[Scroll]   Gardez vos rubis![Choose]
+135: Parfait! Visez comme du monde![2]Prêt? Tirez!
+136: Bon, mon p'tit gars, reprenez[2]le chemin par où vous êtes[3]arrivé!A la prochaine! Bonne journée!
+137: Ca vous tente une[Waitkey][2]autre petite partie?[3]> Oui.[Scroll]   Non.[Choose]
+138: - Etang du Bonheur -[2]Lance quelques rubis et[3]tes souhaits vont se réaliser.[Waitkey][Scroll]Tu veux en lancer?[Scroll]> Oui, quelques-uns![Scroll]   Non, merci![Choose]
+139: Choisis un objet avec la[2]manette, puis lance-le avec[3]le bouton [Y].[Waitkey][Scroll][Item]
+140: C'est bien cet objet-là que[2]t'as lancé?[Waitkey][3]> Oui.[Scroll]   Non.[Choose]
+141: J'aime le monde honnête.[2]J'vais te donner quelque[3]chose de mieux en échange.
+142: T'es sûr que c'est pas à toi?[2]> Oui, oui![3]   Ben... oui, c'est à moi![Choose]
+143: Voyons, me raconte[2]pas d'histoires! Reprends-le!
+144: T'as le boomerang magique![2]Il va plus vite et plus loin[3]que l'ancien!
+145: Ton bouclier est amélioré![2]Il peut maintenant te protéger[3]des boules de feu!
+146: Voici les flèches d'argent.[2]T'en as besoin pour[3]battre Ganon!
+147: Elle a rempli ta bouteille[2]d'elixir de magie. T'es[3]vraiment chanceux d'avoir eu[Waitkey][Scroll]cette potion gratis!
+148: Ton épée est plus forte![2]Tu peux sentir son pouvoir[3]couler dans tes mains!
+149: Ton bonheur a augmenté de [Number 03][Number 02][2]rubis. Ton bonheur total[3]est maintenant de [Number 01][Number 00]. T'es devenu[Waitkey][Scroll]un peu plus heureux.
+150: J'vais exaucer ton voeu.[Waitkey][2]Tu veux pouvoir transporter[3]> plus de bombes.[Scroll]   plus de flèches.[Choose]
+151: J'augmente ta capacité[2]pour que tu puisses porter[3]jusqu'à [Number 01][Number 00] bombes![Waitkey][Scroll]C'est un p'tit cadeau[Scroll]pour te faire plaisir.
+152: J'augmente ta capacité[2]pour que tu puisses porter[3]jusqu'à [Number 01][Number 00] flèches![Waitkey][Scroll]C'est un p'tit cadeau[Scroll]pour te faire plaisir.
+153: J'peux plus exaucer tes[2]voeux, mais une de mes amies[3]peut le faire. Elle habite[Waitkey][Scroll]à la Cascade des Voeux. J'te[Scroll]rends tes rubis. Sois[Scroll] heureux!
+154: Attention aux trous![2]Va tout droit et regarde où[3]tu mets les pieds.[Waitkey][Scroll]Jeune homme, tu t'en vas[Scroll]aussi à la montagne chercher[Scroll]le Pouvoir d'Or?[Waitkey][Scroll]Un peu plus loin, y'a une[Scroll]montagne pleine de monstres.[Scroll]Beaucoup de monde a disparu[Waitkey][Scroll]en cherchant le Pouvoir d'Or.[Scroll]J'veux pas te [Scroll]décourager, mais[Waitkey][Scroll]faut être un peu fou pour se[Scroll]lancer dans une [Scroll]quête pareille.
+155: Ouh! Y'a sûrement un coeur[2]dans le pot.
+156: Hé, tourne à droite ici.[2]Tu sais, j'ai une petite-fille[3]de ton âge.[Waitkey][Scroll]Le roi l'a amenée au château[Scroll]et elle est jamais revenue.[Scroll]Le sorcier doit enlever les[Waitkey][Scroll]jeunes filles pour une raison![Scroll]J'pense qu'il veut se servir[Scroll]des pouvoirs des descendantes[Waitkey][Scroll]des Sept[Scroll] Sages.
+157: J'te connais pas, mais[2]si tu montes à la montagne,[3]emmène-moi avec toi.[Waitkey][Scroll]J'ai perdu ma lampe.
+158: Les jeunes filles disparues[2]sont encore en vie. Le héros[3]va sûrement les sauver.[Waitkey][Scroll]J'ai hâte de voir ça![Scroll]Bon, j'ai assez parlé. Merci[Scroll]d'avoir aidé le vieil homme[Waitkey][Scroll]que j'suis.[Scroll]Prends ça! Si tu tombes sur un[Scroll]téléporteur magique, regarde[Waitkey][Scroll]dans ce miroir.
+159: Le sorcier a fait taire le roi[2]et essaie maintenant d'ouvrir[3]le passage vers le Monde des[Waitkey][Scroll]Ténèbres. Pour finir ta quête,[Scroll]il te faut la Perle de Lune[Scroll]qui se trouve dans la tour[Waitkey][Scroll]au sommet de la montagne.[Scroll]Tout ce que je peux faire,[Scroll]c'est t'aider à te reposer.[Waitkey][Scroll]Reviens quand[Scroll] tu veux.
+160: La Perle de Lune protège[2]celui qui la porte contre la[3]magie du Pays d'Or.[Waitkey][Scroll]Elle lui permet de garder[Scroll]sa forme humaine.[Scroll]Je peux juste t'aider à te[Waitkey][Scroll]reposer pour l'instant.[Scroll]Reviens quand tu veux.
+161: J'pense que le sorcier a[2]relié les deux mondes près[3]du château. Tout ce que je[Waitkey][Scroll]peux faire pour toi, c'est[Scroll]t'aider à te reposer.[Scroll]Reviens quand tu veux!
+162: Snif, snif... Mon fils[2]aimait jouer de la flûte, mais[3]il est parti chercher le[Waitkey][Scroll]Pouvoir d'Or et il est jamais[Scroll]revenu.[Scroll]Où est-il? Qu'est-ce qu'il[Waitkey][Scroll]fait maintenant?[Scroll]... Z z z z z  Z z z z z
+163: Snif, snif... Oh? C'est[2]la flûte de mon fils![3]Tu l'as vu?[Waitkey][Scroll]Où est-il? Il va bien?[Scroll]Je comprends. Je vois dans[Scroll]tes yeux ce que tu veux dire.[Waitkey][Scroll]Tu veux garder la flûte?[Scroll]Joue sa mélodie à l'oiseau[Scroll]dans le parc du village.[Waitkey][Scroll]C'est ce que mon fils aurait[Scroll]voulu. J'aimerais tellement le[Scroll]revoir une [Waitkey][Scroll]dernière fois!
+164: Tu veux garder la flûte?[2]Joue sa douce mélodie[3]à l'oiseau dans le[Waitkey][Scroll]parc du village.[Scroll]J't'en prie![Scroll]C'est ce que mon fils aurait[Waitkey][Scroll]voulu. J'aimerais tellement[Scroll]le revoir une dernière fois!
+165: Z z z z z z z  Z z z z z z z[2]... Ca ronfle![3]Z z z z z z  Z z z z z z
+166: Oh, [Name], on raconte[2]que t'as enlevé la princesse.[3]Pourtant, moi, j'ai toujours[Waitkey][Scroll]confiance en toi.
+167: J'arrive pas à croire que tu[2]m'aies capturé! Avec tes[3]jambes rapides, ça devait[Waitkey][Scroll]être facile d'enlever Zelda.[Scroll]Mais t'as pas l'air méchant![Scroll]Avec des jambes pareilles,[Waitkey][Scroll]pourquoi tu cours pas partout[Scroll]en fonçant dans les choses?[Scroll]Y'a plein de trucs utiles qui[Waitkey][Scroll]pendent dans les arbres du[Scroll]village.[Scroll] Essaie[Waitkey][Scroll] donc!
+168: Si t'as le temps de lire[2]cette affiche,[3]tu devrais te dépêcher.
+169: Je donnerai un morceau de[2]coeur à la personne qui[3]porte la cape magique.
+170: Malheur à celui qui lance[2]quelque chose dans le cercle[3]de pierres.
+171: [UpL][UpR] Forêt des Squelettes[2][3][DownL][DownR] Village des Hors-la-loi
+172: [2]Direction: [RightL][RightR] Grotte
+173: [2][RightL][RightR] Palais des Ténèbres
+174: [2][LeftL][LeftR] Boutique de bombes
+175: [LeftL][LeftR] Marais des Démons[2]       Pas d'entrée![3]       Pas de sortie!
+176: C'est le village des[2]Hors-la-loi.[3]Ca sert à rien d'y aller sans rubis.
+177: La Cascade des Voeux est[2]juste au coin de la rue.
+178: Direction: [RightL][RightR][UpL][UpR][2]Lac du Mauvais Augure
+179: Depuis qu'Agahnim a pris le[2]pouvoir, tout le monde agit[3]bizarrement. J'ai peur que[Waitkey][Scroll]ça m'arrive[Scroll] aussi[Scroll] bientôt.[Waitkey][Scroll]
+180: Entre pas dans le château,[2]p'tit! Les enfants, ça se[3]couche de bonne heure! Allez, au lit!
+181: [Window 02][Name], c'est moi, Sahasrahla.[2]J'peux te parler[3]par télépathie quand tu touches[Waitkey][Scroll]cette dalle. Voici un indice.[Scroll]Le trésor caché dans ce palais[Scroll]va t'aider à battre les[Waitkey][Scroll]ennemis coriaces.
+182: [Window 02][Name], c'est moi, Sahasrahla.[2]Dans cette tour, y'a une sphère[3]qu'on appelle la Perle de Lune.[Waitkey][Scroll]Elle protège la personne qui[Scroll]la porte et lui permet de[Scroll]garder sa forme dans le Monde[Waitkey][Scroll]des Ténèbres.[Scroll]Trouve-la avant de sortir[Scroll]de la tour![Waitkey][Scroll]Oublie pas la Perle de Lune!
+183:     [Ankh][Waves][Ankh][Snake][Ankh][Waves][Ankh][Snake][Ankh][Waves][Waves][Waves][Waves][Ankh][Snake][Ankh][Waves][Ankh][Snake][2]    [Ankh][Snake][Ankh][Ankh][Waves][Ankh][Snake][Ankh][Waves][Ankh][Snake][3]    [Ankh][Waves][Ankh][Snake][Ankh][Ankh][Waves][Ankh][Snake][Snake][Waves][Ankh][Ankh][Snake]
+184: Le héros triomphera[2]avant le grand cataclysme![3]Les trois symboles de vertu,[Waitkey][Scroll]il obtiendra.[Scroll]Excalibur, il retrouvera,[Scroll]et la lignée des chevaliers[Waitkey][Scroll]restera pure.
+185: [Window 02][Name], c'est moi, Sahasrahla.[2]Rends-toi tout en haut[3]du Rocher du Spectacle.[Waitkey][Scroll]De là, tu pourras atteindre la[Scroll]Tour d'Héra, au sommet de la[Scroll]Montagne de la Mort.
+186: [Window 02][Name], c'est moi, Sahasrahla.[2]Les objets existent[3]dans les deux mondes en même[Waitkey][Scroll]temps et se ressemblent.[Scroll]Si l'apparence d'une chose[Scroll]change, celle de son double[Waitkey][Scroll]change aussi dans [Scroll]l'autre monde.
+187: [Window 02][Name], c'est moi, Zelda.[2]Laisse pas la magie[3]d'Aveugle le bandit te[Waitkey][Scroll]mêler. Fais attention!
+188: [Window 02][Name], c'est moi, Sahasrahla.[2]Pour ouvrir le passage,[3]allume quatre endroits.
+189:     [Ankh][Snake][Ankh][Waves][Ankh][Snake][Ankh][Waves][Ankh][Waves][Ankh][2]    [Ankh][Waves][Ankh][Snake][Ankh][Snake][Ankh][Waves][Ankh][Snake][3]   [Ankh][Ankh][Waves][Ankh][Snake][Waves][Ankh][Waves][Waves][Snake][Ankh]
+190: Pour ouvrir le passage,[2]fais une prière[3]et ton souhait sera exaucé.
+191: [Window 02]Quand Ganon est sonné,[2]donne-lui le coup final avec[3]une flèche d'argent![Waitkey][Scroll]T'as compris, [Name]?
+192: [Window 02]Tu m'entends?[2]C'est moi, Zelda. J'suis[3]enfermée dans le Rocher de la[Waitkey][Scroll]Tortue, au sommet de[Scroll]la Montagne de la Mort. Je sais[Scroll]que tu fais tout ton possible,[Waitkey][Scroll]mais j't'en supplie, dépêche-toi!
+193: [Window 02][Name], c'est moi, Sahasrahla.[2]Il faut absolument[3]trouver le trésor[Waitkey][Scroll]de chaque donjon.
+194: [Window 02]Ecoute-moi bien, [Name].[2]Même avec Excalibur,[3]tu peux pas blesser[Waitkey][Scroll]le sorcier.[Scroll]Faut trouver une façon de lui[Scroll]renvoyer sa propre magie[Waitkey][Scroll]dans la face.
+195: [Window 02][Name], utilise pas ta[2]magie si t'as pas[3]l'élixir de magie.[Waitkey][Scroll]Prépare-toi à partir dans[Scroll]les profondeurs du[Scroll] donjon.
+196: [Window 02][Name], t'as de l'élixir[2]de magie? Si t'en as pas,[3]j'te conseille de pas[Waitkey][Scroll]continuer plus loin.
+197: [Window 02][Name], les flammes magiques[2]vont te protéger dans[3]ce donjon de glace.
+198: [Window 02]Tu peux pas battre le[2]chevalier squelette Stalfos[3]avec juste ton épée. Quand il[Waitkey][Scroll]s'écroule, attaque-le avec[Scroll]une autre arme!
+199: [Window 02][Name], c'est moi, Sahasrahla,[2]le Sage! Un conseil: dans[3]le donjon, regarde dans le[Waitkey][Scroll]Miroir Magique chaque fois[Scroll]que tu veux retourner à l'entrée.[Scroll]Oublie pas ça!
+200: C'est ma pièce la plus secrète.[2]Garde ça entre nous, OK?
+201: T'as attrapé une abeille![2]Fais attention, ça pique![3]Tu vas en faire quoi?[Waitkey][Scroll]> La mettre dans une bouteille![Scroll]   La relâcher![Choose]
+202: T'as attrapé une fée![2]Elle est merveilleuse.[3]Tu vas en faire quoi?[Waitkey][Scroll]> La mettre dans une bouteille![Scroll]   La relâcher![Choose]
+203: T'as pas de bouteille vide.[2]T'as pas le choix,[3]relâche-la!
+204: Cette fois, t'as fait[2][Number 03][Number 02] minutes et [Number 01][Number 00] secondes.
+205: Si tu réussis en moins[2]de 15 secondes, j'te[3]donne quelque chose de[Waitkey][Scroll]pas pire. Prêt? Partez!
+206: T'as réussi![2]Félicitations! J'te donne[3]un fragment de coeur.
+207: T'as pas réussi.[2]C'est pas grave![3]Tu veux réessayer?
+208: J'ai plus rien à te donner.[2]Désolé!
+209: Faut entrer dans le[2]labyrinthe par la bonne porte,[3]sinon j'peux pas[Waitkey][Scroll]chronométrer ton temps.
+210: Monsieur! Comment avez-vous[2]fait pour vivre sans mes[3]bouteilles magiques?[Waitkey][Scroll]J'en ai une à vendre pour[Scroll]seulement 100 rubis![Scroll]Ca vous tente?[Waitkey][Scroll]Intéressé?[Scroll]> J'en prends une![Scroll]   Non, merci![Choose]
+211: Au revoir! Merci beaucoup![2]Montrez-la bien haut[3]pour que tout le monde la voie.[Waitkey][Scroll]Ca aide les affaires!
+212: Ah, t'es cassé? Dommage![2]Reviens quand t'auras plus[3]de rubis. Il m'en reste peut-être.
+213: J'ai vendu toutes mes bouteilles.[2]Tant pis pour toi!
+214: Wow, j'ai jamais vu un[2]insecte aussi rare! Je[3]te l'achète 100 rubis. OK?[Waitkey][Scroll]Ca marche!
+215: Hé! On dit que manger du[2]poisson rend intelligent.[3]Donne-moi ce poisson,[Waitkey][Scroll]j'te donne ça en échange. OK?[Scroll]Ca marche!
+216: Oh! [Name], t'as pas l'air[2]en pleine forme, mais c'est[3]tout ce que j'peux te donner!
+217: Hé, toi! Bienvenue![2]Content de te voir.[3]Demande-moi ce que tu veux![Waitkey][Scroll]> Trempe mon épée.[Scroll]   J'faisais juste passer.[Choose]
+218: J'te fais un bon prix![2]> Seulement 10 rubis![3]   Laisse-moi y penser.[Choose]
+219: Tu veux vraiment la faire[2]tremper?[3]> Oui.   Non, j'ai changé d'idée.[Choose]
+220: On peut pas faire mieux[2]que ça. Désolés!
+221: Repasse quand tu veux.[2]BING! BANG![3]On est débordés! BING! BANG!
+222: D'accord! Pas de problème![2]On va garder ton épée[3]un p'tit bout.
+223: Ton épée est trempée![2]Tiens, la voilà!
+224: Si mon partenaire revient,[2]on pourra tremper ton [3]épée.
+225: Ah! Le beau temps est revenu![2]T'as retrouvé mon partenaire![3]On est tellement contents.[Waitkey][Scroll]Reviens nous voir quand tu veux![Scroll]Cette fois, [Scroll]on va tremper[Waitkey][Scroll]ton épée comme du monde!
+226: Croâ, croâ! T'as pas changé[2]d'apparence! T'es pas un gars[3]comme les autres, hein?[Waitkey][Scroll]J'habitais à Cocorico.[Scroll]J'me demande ce que mon[Scroll]partenaire fait sans moi.[Waitkey][Scroll]Croâ! J'ai un service à te[Scroll]demander. Amène-moi voir mon[Scroll]partenaire, s'il te plaît![Waitkey][Scroll]Croâ! Croâ!
+227: Désolés, on a pas fini![2]Repasse dans un p'tit moment!
+228: Merci![3]Merci!
+229: Hé, les amateurs comme toi[2]devraient nous laisser faire.[3]Tu nous déranges. Laisse-nous[Waitkey][Scroll]travailler tranquilles!
+230: Quand j'suis arrivé dans ce[2]monde, j'ai été transformé[3]en ça.[Waitkey][Scroll]Dans le vrai monde, j'aimais[Scroll]jouer de la flûte.[Scroll]Y'avait un p'tit bosquet où[Waitkey][Scroll]plein d'animaux se retrouvaient.[Scroll]J'aimerais revoir cet endroit.[Scroll]C'est là que j'ai enterré ma[Waitkey][Scroll]flûte avec des graines de fleurs.[Waitkey][Scroll]Peux-tu me la retrouver?[Scroll]> Oui.[Scroll]   Pas question![Choose]
+231: Alors, j'te prête ma pelle.[2]Bonne chance!
+232: Parfait! J'te demanderai[2]plus rien! Salut!
+233: T'as trouvé ma flûte?[2]Continue à chercher![3]Faut pas lâcher!
+234: Merci, [Name], mais j'pense[2]que j'peux plus en jouer.[3]Prends-la.[Waitkey][Scroll]Si tu vas au village où[Scroll]j'habitais, donne-la au[Scroll]vieil homme endormi que tu[Waitkey][Scroll]vas trouver.[Scroll]Bon, j'perds mes esprits.[Scroll]Fais-moi entendre la flûte[Waitkey][Scroll]une dernière fois...
+235: [Position 01]Abracadabra, abracadabra![2]Tu vas trouver le Sage[3]Sahasrahla.
+236: [Position 01]Abracadabra, abracadabra![2]Tu vas ouvrir l'entrée du désert[3]avec le Livre de Mudora[Waitkey][Scroll]que t'as apporté du village.
+237: [Position 01]Abracadabra, abracadabra![2]Tu vas trouver un descendant[3]des Sept Sages dans le désert.
+238: [Position 01]Abracadabra, abracadabra![2]Tu vas rencontrer un amateur[3]de champignons à la Boutique[Waitkey][Scroll]Magique, à l'est du Sanctuaire.
+239: [Position 01]Abracadabra, abracadabra![2]Tu vas rencontrer Zora, qui[3]habite dans un lac à la source[Waitkey][Scroll]de la rivière.
+240: [Position 01]Abracadabra, abracadabra![2]Le vrai héros va trouver[3]la Perle de Lune dans[Waitkey][Scroll]la Tour d'Héra.
+241: [Position 01]Abracadabra, abracadabra![2]Si Excalibur peut pas blesser[3]le sorcier, elle peut quand[Waitkey][Scroll]même le tuer si tu t'en sers[Scroll]comme il [Scroll]faut.
+242: [Position 01]Abracadabra, abracadabra![2]Le vrai héros va sauter dans[3]le puits près de la Boutique[Waitkey][Scroll]des Forgerons.
+243: [Position 01]Pour vrai, j'suis pas[2]en grande forme aujourd'hui.[3]Mais reviens me voir.
+244: [Position 01]Hmm... T'as l'air d'avoir[2]un destin hors de l'ordinaire.[3]Ca te tente que je te prédise[Waitkey][Scroll]l'avenir?[Waitkey][Scroll]J'te fais un bon prix![Scroll]> Dis-moi ce qui m'attend![Scroll]   Non, ça m'intéresse pas.[Choose]
+245: [Position 01]Ca va te coûter [Number 00][Number 01] rubis.[2]Prends soin de toi.[3]Ah! Ah! Ah! Ah!
+246: [Position 01]Pauvre toi.[2]Tu veux pas me croire. Tu[3]vas revenir un de ces jours.
+247: [Position 01]Abracadabra, abracadabra![2]Tu vas voir un monument[3]dans le Désert du Mystère.
+248: [Position 01]Abracadabra, abracadabra![2]Un coffre bizarre... La Boutique[3]Magique dans la grotte du[Waitkey][Scroll]Monde des Ténèbres pourrait[Scroll]t'aider...
+249: [Position 01]Abracadabra, abracadabra![2]Tu vas trouver le partenaire[3]du forgeron tout au fond du[Waitkey][Scroll]village des Hors-la-loi.
+250: [Position 01]Abracadabra, abracadabra![2]Un trésor repose en paix[3]au cimetière du Monde[Waitkey][Scroll]de la Lumière.
+251: [Position 01]Abracadabra, abracadabra![2]Tu vas acheter un nouveau[3]genre de bombe à la Boutique[Waitkey][Scroll]des Bombes.
+252: [Position 01]Abracadabra, abracadabra![2]Tu vas trouver quelqu'un[3]dans la pyramide du Monde[Waitkey][Scroll]des Ténèbres.
+253: [Position 01]Abracadabra, abracadabra![2]Tu vas frapper un mur si[3]tu essaies d'entrer dans la[Waitkey][Scroll]Tour de Ganon.
+254: [Position 01]Abracadabra, abracadabra![2]Il te faudra une flèche[3]d'argent pour achever Ganon.[Waitkey][Scroll]C'est elle qui va porterle coup final.
+255: Hé, j'te raconte une[2]histoire intéressante pour[3]20 rubis.[Waitkey][Scroll]Ca marche?[Scroll]> D'accord![Scroll]   Non, pas question![Choose]
+256: Ah! Merci. On dit qu'y a[2]un cercle de pierres fragile[3]dans le lac à la source[Waitkey][Scroll]de la rivière. J'sais pas trop,[Scroll]mais ça pourrait être drôle d'y[Scroll]lancer quelque chose. Hé, hé![Waitkey][Scroll]A la prochaine!
+257: J'fréquente pas le monde[2]qui ont pas une cenne![3]Allez, décrisse!
+258: Hé, hé! Merci.[2]A vrai dire, j'étais un[3]bandit dans le Monde de la[Waitkey][Scroll]Lumière. Un de mes[Scroll]compagnons est parti se[Scroll]cacher pour pas se faire[Waitkey][Scroll]arrêter. Il était expert pour[Scroll]ouvrir les portes, mais il[Scroll]cache maintenant son passé[Waitkey][Scroll]de bandit en se faisant passer[Scroll]pour un vieux grincheux![Scroll]Ha, ha, ha!
+259: Ah! Merci. Entre nous, j'ai vu[2]quelqu'un de vraiment beau[3]dans la pyramide, mais on l'a[Waitkey][Scroll]scellée. Une bombe normale[Scroll]peut pas l'ouvrir.
+260: Hé, merci. Justement, le[2]monstre magique fait pleuvoir[3]dans le marais.[Waitkey][Scroll]Si t'arrives à souffler plus[Scroll]fort que lui, la pluie va[Scroll]arrêter.
+261: Snif, snif... Hé, mon gars![2]T'as une bouteille pour mettre[3]un insecte?[Waitkey][Scroll]Tant pis si t'en as pas![Scroll]Atchoum! Atchoum!
+262: J'peux pas sortir, j'suis[2]malade. Atchoum! Atchoum![3]On m'a dit que l'air maudit[Waitkey][Scroll]de la montagne m'a donné[Scroll]ce rhume-là![Scroll]Snif, snif...[Waitkey][Scroll]Tiens, prends mon filet à[Scroll]papillons. J'vais m'en servir[Scroll]quand j'irai mieux, mais[Waitkey][Scroll]en attendant, j'te le prête.
+263: Snif... J'espère guérir[2]bientôt.[3]Atchoum! Atchoum!
+264:     .................[2]    ............
+265: Pourquoi t'as pris mon[2]affiche? C'est écrit dessus[3]de me laisser tranquille! GRRR!
+266: J'ai entendu dire que tu sais[2]que j'étais un bandit. C'est[3]vrai?[Waitkey]Bon, j'vais t'ouvrir un coffre.[Scroll]Mais parle de notre jasette[Scroll]à personne.[Waitkey][Scroll]Tu me le jures?[Scroll]> Juré![Scroll]   Pas question![Choose]
+267: Ah, c'est comme ça? Tu vas[2]traîner ce coffre avec toi[3]pour toujours!
+268: Oublie pas, t'as promis![2]Dis-le à personne!
+269: Parfait, apporte le coffre[2]par ici. Mais sérieusement,[3]raconte ça à personne.
+270:     [Waves][Snake][Waves][Snake][Waves][Snake][Waves][Snake][Waves][Snake][Waves][Snake][Waves][Waves][Waves][Snake][2]    [Waves][Ankh][Snake][Snake][Ankh][Waves][Ankh][Snake][Waves][Ankh][Snake][Waves][Ankh][Snake][Ankh][Waves][3]    [Snake][Waves][Snake][Waves][Snake][Waves][Snake][Ankh][Snake][Ankh]
+271: Lève Excalibur et[2]tu vas recevoir la magie[3]d'Ether.
+272: Lève Excalibur et[2]tu vas recevoir la magie[3]des Flammes.
+273: Maudit sois-tu de m'avoir[2]réveillé![3]Heu, j'voulais dire merci![Waitkey][Scroll]J'vais me venger![Scroll]Heu, non, c'est pas ça[Scroll]que j'voulais dire.
+274: Hé, hé, hé! Bien fait![2]Heu, j'voulais pas dire ça![3]Ta magie va maintenant[Waitkey][Scroll][Scroll]durer deux fois plus longtemps![Scroll]Bravo! Fais de ton mieux,[Waitkey][Scroll]même si j'pense pas que ça[Scroll]va suffire. Bonne journée![Scroll]Salut!
+275: [ScrollSpd 00][Color 07][Speed 03][Window 02][NextPic]Y'a bien longtemps, le beau[2]royaume d'Hyrule était entouré[3]de montagnes et de forêts.[...][Wait 07][Scroll]Des légendes parlaient d'un[Scroll]Pouvoir d'Or tout-puissant,[Scroll]caché dans un endroit secret.[Wait 07][NextPic][NextPic][Scroll]Beaucoup de gens ont pris les[Scroll]armes pour trouver cette[Scroll]Terre d'Or secrète, mais[...][Wait 07][NextPic][NextPic][Scroll]personne n'en est jamais revenu.[Scroll]Un jour, une force maléfique[Scroll]a jailli de la Terre d'Or.[Wait 07][Scroll]Le roi a donc demandé aux[Scroll]Sept Sages de sceller la porte[Scroll]de cette Terre d'Or.[Wait 07][Scroll][...][Scroll]Le sceau aurait dû[Scroll]durer pour toujours.[Wait 07][NextPic][NextPic][Scroll]Mais les événements, oubliés[Scroll]dans la brume du temps, sont[Scroll]devenus des légendes,
+276: [Window 02][Color 07][Speed 03][1]quand un mystérieux sorcier[2]nommé Agahnim est arrivé à[3]Hyrule pour briser le sceau.[...] Il a tué[Wait 05][Scroll]le bon roi d'Hyrule.
+277: [Window 02][Color 07][Speed 03]Avec sa magie, il a commencé[2]à faire disparaître un par un[3]les descendants des Sept Sages.[...]
+278: [Window 02][Color 07][Speed 03]Et le destin de la princesse[2]Zelda est sur le point[3]de s'accomplir.
+279: Tu pourras jamais ouvrir ce[2]coffre, il est barré à clé.[3]Amène-le avec toi!
+280: 100 rubis pour 30 bombes! 30[2]bombes pour seulement 100 rubis![3]Achète-les-moi, [Waitkey][Scroll]monsieur!
+281: 100 rubis pour 30 bombes! J'ai[2]aussi une super-bombe neuve[3]pour seulement 100 rubis![Waitkey][Scroll]Achète-m'en une [Scroll]aussi, monsieur!
+282: Merci beaucoup.[2]Merci beaucoup.
+283: Merci beaucoup! Tu peux[2]laisser tomber la bombe où tu[3]veux.Appuie sur [A].[Waitkey][Scroll]Oublie pas!
+284: Ki! Ki! Donne-moi 100[2]rubis et j'ouvre l'entrée[3]pour toi. Ki, ki, ki![Waitkey][Scroll]Alors, tu décides quoi?[Scroll]> Ouvre-la pour moi![Scroll]   J'vais l'ouvrir moi-même![Choose]
+285: Ki! Ki! Ki! Hum![2]Fais-le toi-même, gratteux![3]Ki! Ki! Ki!
+286: Ki! Ki! Ki! Bon choix![2]Ca va faire 100 rubis. Ki!Ki! Ki!
+287: C'est moi, Kiki le singe![2]J'aime les rubis plus que tout.[3]Tu peux m'en donner 10?[Waitkey][Scroll]Tu décides quoi?[Scroll]> Tiens, 10 rubis.[Scroll]   Dans tes rêves![Choose]
+288: Ki, ki, ki, ki! Bon choix![2]J'vais te suivre un bout![3]Ki, ki, ki!
+289: Ki, ki! Grrr! On a plus[2]rien à se dire, dans ce cas.[3]Salut! Ki, ki, ki!
+290: Ki, ki! Qu'est-ce tu fais?[2]J'veux pas aller par là!
+291: Oh, merci![2]Tu m'as sauvé la vie.[3]Aide-moi à sortir.
+292: Wow![2]C'est tellement brillant!
+293: Hé, attends![2]Va pas par là!
+294: J'm'appelle Aginah. J'ai[2]l'impression qu'il va se passer[3]quelque chose dans la Terre d'Or[Waitkey][Scroll]scellée par les Sept Sages.[Scroll]Ca annonce peut-être le Grand[Scroll]Cataclysme prédit par le peuple[Waitkey][Scroll]hylien. La prophétie dit que[Scroll]le héros sera dans le désert[Scroll]avec le Livre de Mudora.[Waitkey][Scroll]Avec ce livre, tu peux lire[Scroll]la langue des Hyliens.[Scroll]Il est sûrement à la Maison[Waitkey][Scroll]des Livres, au village.[Scroll]Va le chercher si t'es[Scroll]vraiment [Waitkey][Scroll]le héros!
+295: T'as trouvé les trois[2]Pendentifs. Si t'es le héros,[3]avec assez de sagesse, de[Waitkey][Scroll]force et de courage,[Scroll]Excalibur, dans la forêt,[Scroll]va être à toi.
+296: Ah! Voilà le Livre de Mudora.[2]Tu peux t'en servir pour lire[3]la langue des Hyliens.
+297: T'es le vrai héros.[2]J'sais que tu vas ramener[3]la paix sur ces terres.
+298: Ton épreuve t'a rendu plus[2]fort. Le sang du héros[3]coule dans tes veines.
+299: C'est toi qui m'as dérangé[2]pendant ma sieste?[3]Prends ça et laisse-moi tranquille!
+300: J'ai plus rien d'intéressant.[2]Prends ça quand même,[3]pot de colle!
+301: Oh! [Name]! Y'a un brouillard[2]bizarre qui est tombé[3]sur la forêt. Faisons attention!
+302: C'est peut-être rien, mais[2]cet arbre avait l'air bizarre[3]quand on l'a coupé.
+303: Ah! Le brouillard se lève![2]Ouf! On peut y retourner![3]Hé, mon frère!
+304: J'me suis chicané avec[2]mon p'tit frère. J'ai barré[3]la porte de sa chambre.
+305: Quoi? T'as défoncé la porte![2]Va falloir la remplacer![3]C'est ben ma chance![Waitkey][Scroll]J'vais faire la paix avec mon frère.
+306: Hé! Tu sors de la chambre[2]de mon grand frère?[3]Il est encore fâché?
+307: [Speed 02][Position 01][Window 02][Name], grâce à toi, j'peux[2]m'échapper de ces monstres[3]maudits. Merci![Waitkey][Scroll]Ce monde était autrefois la[Scroll]Terre d'Or, où la Triforce[Scroll]était cachée. Mais après le[Waitkey][Scroll][Scroll]voeu de Ganon, quand il s'en[Scroll]est emparé, tout a changé.[Waitkey][Scroll]Ganon rassemble maintenant[Scroll]ses forces pour conquérir[Scroll]notre Monde de la Lumière,[Waitkey][Scroll]après avoir pris le contrôle[Scroll]de celui-ci.[Scroll]Il veut briser le sceau avec[Waitkey][Scroll]les pouvoirs que nous, les sept[Scroll]jeunes filles, avons hérités[Scroll]des Sages. Il veut ouvrir un[Waitkey][Scroll]passage encore plus grand entre[Scroll]les deux mondes. Mais il est[Scroll]pas assez large pour l'instant.[Waitkey][Scroll]Tout est pas perdu![Scroll]Si nous, les sept jeunes[Scroll]filles, unissons nos pouvoirs,[Waitkey][Scroll]on peut briser la barrière[Scroll]autour de la cachette de Ganon.[Scroll]J'vais t'indiquer où les[Waitkey][Scroll]autres filles sont retenues.[Scroll]J'suis sûre que tu vas battre[Scroll]Ganon. On va retrouver notre[Waitkey][Scroll]apparence d'origine.[Sound 45]
+308: [Speed 02][Position 01][Window 02][Name], grâce à toi, j'peux[2]m'échapper de ces monstres[3]maudits. Merci![Waitkey][Scroll]La Triforce exauce les[Scroll]voeux de la personne qui la[Scroll]touche pour le reste de sa vie.[Waitkey][Scroll]C'est pour ça qu'elle était[Scroll]cachée dans la Terre d'Or.[Scroll]Seuls quelques élus savaient[Waitkey][Scroll]où elle se trouvait.[Scroll]Un jour, un bandit nommé[Scroll]Ganondorf a découvert la[Waitkey][Scroll]Terre d'Or. Heureusement, il a[Scroll]pas trouvé comment revenir au[Scroll]Monde de la Lumière.[Waitkey][Scroll]Oublie pas ton Miroir Magique.[Scroll]Seul le héros peut s'en servir.[Scroll]Y'a d'autres téléporteurs[Waitkey][Scroll]magiques comme celui de la[Scroll]Montagne de la Mort.[Scroll]En passant par eux, tu peux[Waitkey][Scroll]voyager d'un monde à l'autre[Scroll]et trouver les démons cachés[Scroll]dans le Monde des Ténèbres.[Waitkey][Scroll]T'es le seul à pouvoir battre[Scroll]Ganondorf, le bandit... non,[Scroll]Ganon,[Waitkey][Scroll] le roi[Scroll] des [Scroll]Ténèbres![Waitkey][Scroll]
+309: [Speed 02][Position 01][Window 02][Name], grâce à toi, j'peux[2]m'échapper de ces monstres[3]maudits. Merci![Waitkey][Scroll]Tu connais la prophétie du[Scroll]Grand Cataclysme?[Scroll]Voilà ce que j'en sais:[Waitkey][Scroll]si quelqu'un de maléfique met[Scroll]la main sur la Triforce, un[Scroll]héros va apparaître.[Waitkey][Scroll]Lui seul pourra affronter[Scroll]celui qui a causé le Grand[Scroll]Cataclysme.[Waitkey][Scroll]Si le démon bat le héros,[Scroll]rien pourra empêcher son[Scroll]règne maléfique.[Waitkey][Scroll]Seul un descendant des[Scroll]chevaliers d'Hyrule, qui[Scroll]protégeaient le royaume[Waitkey][Scroll]d'Hylia, peut devenir le héros.[Scroll]T'as leur sang dans les veines,[Scroll]hein? Alors sauve Zelda!
+310: [Speed 02][Position 01][Window 02][Name], grâce à toi, j'peux[2]m'échapper de ces monstres[3]maudits. Merci![Waitkey][Scroll]Pendant que les Sages[Scroll]scellaient le chemin vers le[Scroll]Monde des Ténèbres, les[Waitkey][Scroll]chevaliers d'Hyrule les[Scroll]protégeaient des monstres.[Scroll]J'ai entendu dire que presque[Waitkey][Scroll]tous les chevaliers sont morts[Scroll]dans cette bataille.[Scroll]T'es peut-être le dernier[Waitkey][Scroll]de leur lignée. C'est drôle[Scroll]que le dernier puisse devenir[Scroll]le héros de la [Waitkey]légende.[Scroll]Tu vas [Scroll]sûrement battre[Scroll] Ganon!
+311: [Speed 02][Position 01][Window 02][Name], grâce à toi, j'peux[2]m'échapper de ces monstres[3]maudits. Merci![Waitkey][Scroll]On dit que les Hyliens[Scroll]avaient des pouvoirs[Scroll]mystérieux, comme les Sages.[Waitkey][Scroll]Mais leur sang a perdu de sa[Scroll]force avec le temps.[Scroll]Nous, les descendants des[Waitkey][Scroll]Sept Sages, on a presque plus[Scroll]de pouvoirs.[Scroll]Nos pouvoirs vont grandir si[Waitkey][Scroll]on mélange le courage des[Scroll]chevaliers à la sagesse des[Scroll]Sages.[Waitkey][Scroll]Il reste pas beaucoup de temps[Scroll]avant que le passage entre les[Scroll]deux mondes s'élargisse.[Waitkey][Scroll]Si tu bats Ganon, ce monde va[Scroll]disparaître et la Triforce[Scroll]attendra son nouveau[Waitkey][Scroll]propriétaire.[Scroll]J'ai confiance en toi! Courage!
+312: [Speed 02][Position 01][Window 02][Name], grâce à toi, j'peux[2]m'échapper de ces[3]monstres maudits.[Waitkey][Scroll]Merci! Ganon nous a capturées[Scroll]parce qu'il pouvait pas briser[Scroll]le sceau des Sept Sages tout[Waitkey][Scroll]seul. Il s'est servi du sorcier[Scroll]Agahnim pour nous attirer[Scroll]dans le Monde des Ténèbres.[Waitkey][Scroll]Après avoir brisé le sceau[Scroll]avec nos pouvoirs, il nous a[Scroll]enfermées dans ces cristaux[Waitkey][Scroll]et confiées à ses monstres.[Scroll]Mais Ganon t'a sous-estimé.[Scroll]Il pensait pas que t'irais[Waitkey][Scroll]aussi loin.[Scroll]Maintenant, la[Scroll] princesse Zelda[Waitkey][Scroll]t'attend dans le Rocher de la[Scroll]Tortue.[Scroll]Dépêche-toi!
+313: [Speed 02][Position 01][Window 02]Merci d'avoir franchi tant[2]d'obstacles pour me sauver.[3]Comme je le pensais, t'es[Waitkey][Scroll]le héros de la légende. J'ai[Scroll]senti ça dès notre[Scroll]première rencontre.[Waitkey][Scroll]Ganon attend dans sa tour[Scroll]que la brèche entre les[Scroll]deux mondes s'agrandisse.[Waitkey][Scroll]Si Ganon entre dans le[Scroll]Monde de la Lumière,[Scroll]personne pourra l'arrêter.[Waitkey][Scroll]Mais s'il reste dans l'espace[Scroll]étroit de ce monde, tu peux[Scroll]le retrouver partout[Waitkey][Scroll]où il se cache. Pars[Scroll]maintenant avec les 7 Cristaux[Scroll]à la Tour de Ganon![Waitkey][Scroll]On va unir nos pouvoirs pour[Scroll]briser sa barrière.[Scroll]Ramène la paix au pays![Sound 45]
+314: [Speed 02][Position 01][Window 02]Que la Triforce guide[2]le héros sur son chemin!
+315: [Speed 02][Position 01][Window 02]T'as compris?[2]> Oui.[3]   Non, pantoute![Choose]
+316: [Name]! On va briser[2]la barrière de la Tour de Ganon[3]avec nos pouvoirs.
+317: [Speed 02][Position 01][Window 02]Merci d'avoir franchi tant[2]d'obstacles pour me sauver.[3]Comme j'm'en doutais, t'es[Waitkey][Scroll]le héros de la légende.[Scroll]Je l'ai senti dès notre première[Scroll]rencontre.[Waitkey][Scroll]Ganon attend dans sa[Scroll]tour pour ouvrir la[Scroll]brèche entre les deux[Waitkey][Scroll]mondes. Quand Ganon entrera[Scroll]dans le Monde de la Lumière,[Scroll]personne aura de chance[Waitkey][Scroll]de l'arrêter.[Scroll]Mais s'il reste dans l'espace[Scroll]fermé de ce monde, tu peux[Waitkey][Scroll]le retrouver partout où il[Scroll]se cache. Les autres[Scroll]jeunes filles ont besoin de ton[Waitkey][Scroll]aide. Sauve-les toutes,[Scroll]puis va à la Tour de[Scroll]Ganon. Nous, les descendantes[Waitkey][Scroll]des Sages, on va unir nos[Scroll]pouvoirs pour briser[Scroll]la barrière de la Tour de Ganon.[Waitkey][Scroll][Name], faut ramener la[Scroll]paix dans ce royaume.
+318: Ah! Ah! Ah![2]C'est vous que j'attendais![3]Ah! Ah![Waitkey][Scroll]J'avais tellement hâte de voir[Scroll]Zelda disparaître sous vos[Scroll]yeux. Assistez aux derniers[Waitkey][Scroll]moments de la [Scroll]princesse Zelda!
+319: Ah! Ah! Ah! Le sceau des[2]Sept Sages est enfin brisé.[3]C'est juste une question[Waitkey][Scroll]de temps avant que la force[Scroll]démoniaque prenne le contrôle.[Scroll]Après tout, le héros peut pas[Waitkey][Scroll]nous battre, nous les démons,[Scroll]avec le Pouvoir d'Or de notre[Scroll]côté.[Waitkey][Scroll]Bon, à la [Scroll]prochaine!
+320: Sérieusement? Tu veux[2]vraiment te faire tuer?[3]Ca va me faire plaisir![Waitkey][Scroll]J'me ferai une joie de te battre.
+321: Grrrr! Pas mal![2]T'es digne d'un héros![3]Mais j'ai pas l'intention de[Waitkey][Scroll]me laisser battre. J'vais[Scroll]t'amener dans le Monde[Scroll]des Ténèbres!
+322: Ah, ah, ah! C'est merveilleux[2]que tu sois rendu jusqu'ici.[3]J'suis tellement content de te[Waitkey][Scroll]revoir. Mais c'est notre[Scroll]dernière rencontre.[Scroll]Prépare-toi[Waitkey][Scroll] à mourir!
+323: Ah! Ah! Ah! Qu'est-ce[2]que tu veux, p'tit?[Waitkey][3]T'as quelque chose à me dire?[Scroll]> J'veux les palmes![Scroll]   J'faisais juste passer![Choose]
+324: Ah, ah, ah! J'donne pas[2]les palmes gratis![3]C'est 500 rubis la paire.[Waitkey][Scroll]Alors, tu décides quoi?[Scroll]> J'paie.[Scroll]   J'laisse faire.[Choose]
+325: Ah, ah, ah! Excellent choix![2]Pour 500 rubis, t'as les[3]palmes. En prime, tu peux[Waitkey][Scroll]utiliser les canaux magiques[Scroll]entre les lacs et les rivières.[Scroll]Quand tu vois un tourbillon,[Waitkey][Scroll]plonge dedans. Qui sait où[Scroll]tu vas ressortir! Ah! Ah! Ah!
+326: Reviens par le même chemin[2]quand t'auras plus de rubis.[3]Ah, ah, ah! A la prochaine!
+327: Reviens quand tu veux[2]voir ma face de poisson![3]Ah! Ah![Waitkey][Scroll] Ah! Salut!
+328: Le Sage? Tu veux dire le[2]Grand-père? Oui, mais le dis[3]pas aux méchants.[Waitkey][Scroll]Il se cache au Palais de l'Est.[Scroll]J'vais te montrer où sur la[Scroll]carte. Voilà!
+329: T'as vu Grand-père?[2]Il va revenir au village[3]quand les méchants seront partis.
+330: T'es pas du coin, toi?[2]Tu viens ici pour[3]chercher le Pouvoir d'Or?[Waitkey][Scroll]T'arrives trop tard. Il obéit[Scroll]seulement à la première[Scroll]personne qui le touche. Cet[Waitkey][Scroll]homme a demandé la création de[Scroll]ce monde horrible.[Scroll]Ca reflète la noirceur de son âme.[Waitkey][Scroll]Moi aussi, j'voulais le Pouvoir[Scroll]d'Or, alors j'suis venu ici.[Scroll]Regarde ce qui m'est arrivé![Waitkey][Scroll]Pour retrouver la Terre d'Or,[Scroll]quelqu'un digne du Pouvoir[Scroll]d'Or doit battre l'homme qui[Waitkey][Scroll]a créé cet endroit.[Scroll]En attendant, j'vais garder[Scroll]cette drôle de forme. Mais[Waitkey][Scroll]pourquoi les Anciens ont gardé[Scroll]pour eux ce fameux Pouvoir[Scroll]d'Or, la Triforce?
+331: Etang mystérieux![2]Tu veux rien lancer dedans?[Waitkey][3]Alors, tu fais quoi?[Scroll]> Lancer un objet![Scroll]   Laisser faire![Choose]
+332: [2]Lance-le pas!
+333: [2]Lance-le pas!
+334: J'te le redonne alors![2]Lance plus rien!
+335: Combien de rubis tu lances?[2]> [Number 01][Number 00] rubis.[3]   [Number 03][Number 02] rubis.[Choose]
+336: T'es vraiment honnête. J't'aime[2]bien. J'vais te donner[3]quelque chose de précieux.[Waitkey][Scroll]Voici les flèches d'argent[Scroll]pour donner le coup final à[Scroll]Ganon. Elles sont[Waitkey][Scroll]indispensables. J'sais que j'ai[Scroll]un peu engraissé, mais c'est[Scroll]la faute à la magie de Ganon![Waitkey][Scroll]Faut que tu le battes!
+337: [2]T'as une très bonne chance!
+338: [2]T'as une bonne chance!
+339: [2]T'as une petite chance!
+340: [2]T'as un gros problème!
+341: En passant, aujourd'hui,[2]tu vas avoir:
+342: T'as trouvé un fragment de[2]coeur![3]                 [1HeartL][1HeartR]
+343: T'as trouvé un fragment de[2]coeur![3]                 [2HeartL][1HeartR]
+344: T'as trouvé un fragment de[2]coeur![3]                 [3HeartL][3HeartR]
+345: T'as trouvé un réceptacle[2]de coeur![3]                 [4HeartL][4HeartR][Waitkey][Scroll]Ton énergie a augmenté[Scroll]d'un coeur.
+346: T'as trouvé un réceptacle[2]de coeur![3]                 [4HeartL][4HeartR][Waitkey][Scroll]Ton énergie a augmenté[Scroll]d'un coeur!
+347: J'vais t'enlever ta fatigue[2]et celle du voyage.[3]Ferme les yeux, relaxe-toi.
+348: Oh! T'as été changé en[2]lapin. Ce monde ressemble au[3]vrai, mais le diable l'a[Waitkey][Scroll]déformé. Le Pouvoir d'Or nous[Scroll]donne une apparence qui[Scroll]reflète nos pensées et notre[Waitkey][Scroll]coeur.[Scroll]Comme j'ai changé d'idée tout[Scroll]le temps, j'ai été transformé[Waitkey][Scroll]en balle. Mais avec la Perle[Scroll]de Lune, tu peux garder[Scroll]ta forme d'origine[Waitkey][Scroll] ici.
+349: T'as pas changé de forme?[2]T'es pas une personne[3]ordinaire, hein?
+350: Qu'est-ce que tu veux?[2]T'as quelque chose à me dire,[3]espèce de lapin stupide?[Waitkey][Scroll]J'suis venu chercher le Pouvoir[Scroll]d'Or et j'ai été transformé.[Scroll]En plus, j'peux pas retourner[Waitkey][Scroll]dans le vrai monde.[Scroll]Si seulement j'avais la Perle[Scroll]de Lune de la Tour d'Héra![Waitkey][Scroll]Je retrouverais ma forme.[Scroll]J'me fais du [Scroll]mauvais sang![Waitkey][Scroll]Pfuitt, pfuitt!
+351: Wow! T'as pas changé de[2]forme! T'as la Perle de Lune,[3]hein?
+352: Dans un monde aussi dangereux,[2]tu vas avoir besoin de[3]plein de choses. Choisis[Waitkey][Scroll]ce qui te plaît.
+353: Bonjour! Pour 30 rubis,[2]tu peux ouvrir deux coffres.[3]Allez, viens jouer![Waitkey][Scroll]Alors, tu te décides?[Scroll]> J'embarque![Scroll]   Une autre fois![Choose]
+354: Parfait, reviens jouer[2]quand tu veux.[3]Je vais t'attendre. Salut!
+355: Hé, p'tit![2]Tu peux pas ouvrir de coffre[3]avant d'avoir payé!
+356: Tu peux plus ouvrir[2]de coffres. La partie est finie.
+357: Allez, p'tit![2]Choisis comme il faut!Bonne chance!
+358: Bonjour. Choisis ce que[2]tu veux et appuie sur[3]le bouton [A].
+359: T'as pas besoin de cet[2]objet. Prends-en [3]un autre.
+360: Merci beaucoup.[2]Si tu perds ton bouclier,[3]reviens me voir!
+361: Voici l'Elixir de vie. Il te[2]redonne de [3]l'énergie.
+362: Merci beaucoup.[2]C'est des flèches. Tu peux[3]pas t'en servir sans arc.
+363: C'est des bombes.[2]Tu savais que tu peux ramasser[3]une bombe que t'as déjà lancée?[Waitkey][Scroll]Appuie sur le [Scroll]bouton [A].
+364: Merci beaucoup.[2]C'est une abeille. Mais me[3]demande pas à quoi ça sert.
+365: Merci beaucoup. Ton énergie[2]a augmenté d'un coeur.
+366: Non, non, non! J'peux pas[2]te vendre d'objets[3]sans flacon vide.
+367: T'as déjà le maximum de cet[2]objet! T'as besoin d'autre[3]chose?
+368: J'aurais jamais cru qu'un[2]maigrichon comme toi puisse[3]me causer autant de trouble.[Waitkey][Scroll]J'en reviens pas que t'aies[Scroll]battu deux fois mon autre moi,[Scroll]Agahnim le sombre[Waitkey][Scroll]sorcier! Mais j'te donnerai[Scroll]jamais la Triforce. J'vais[Scroll]te détruire pour réaliser[Waitkey][Scroll]mon rêve de conquérir les[Scroll]Mondes des Ténèbres et de[Scroll]la Lumière, ça presse!
+369: Tu te débrouilles pas mal,[2]mais vas-tu réussir à passer[3]cette technique secrète des[Waitkey][Scroll]ténèbres? En garde!
+370: Hé, p'tit! C'est notre repaire,[2]celui des bandits![3]Entre pas sans permission![Waitkey][Scroll]Un de nos complices est[Scroll]à l'entrée du désert.
+371: [Name], cette maison servait[2]de repaire à une bande de[3]bandits.[Waitkey][Scroll]Comment s'appelait leur chef?[Scroll]Ah oui, l'Aveugle. Il[Scroll]détestait la lumière forte.
+372: [Speed 02][Window 00][Window 02]Bienvenue, [Name].[2]Je suis l'Essence de la[3]Triforce.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Le Pouvoir d'Or de la Triforce[2]des dieux exauce les voeux de[3]la personne qui la touche.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Si quelqu'un au coeur[2]d'or la touche, tous ses bons[3]voeux vont se réaliser.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Si quelqu'un au coeur[2]sombre la touche, elle va[3]exaucer ses voeux diaboliques.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Plus le voeu est fort, plus[2]la Triforce l'exauce avec[3]puissance.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Ganon a voulu conquérir le[2]monde. Son voeu a changé la Ter-[3]re d'Or en Monde des Ténèbres.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Comme Ganon a développé ses[2]pouvoirs ici, il pouvait aussi[3]conquérir le Monde de la Lumière.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Mais tu as maintenant[2]détruit Ganon. Son Monde[3]des Ténèbres va disparaître.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]La Triforce attend son[2]nouveau propriétaire. Son pou-[3]voir d'Or est entre tes mains.[Speed 01][Waitkey][1]                                          [2]                                          [3]                                          [Speed 02][1]Maintenant, touche-la et fais[2]un voeu dans[3]ton coeur.
+373: Très bien! Prends ça!
+374: Hip... hip... J'l'ai vue![2]Une jolie... hip... fille à la[3]cascade des voeux, dans les[Waitkey][Scroll]coll... hip...ines où la[Scroll]rivière prend sa source.[Scroll][Name], va la voir[Waitkey][Scroll]au moins une fois. Elle va[Scroll]te faire craqu... hip!
+375: [2]C'est un secret!
+376: Va voir dans la grotte à l'est[2]du lac Hylia. Y a des choses[3]étranges et merveilleuses là-dedans.
+377: Si tu bats les ennemis[2]gelés, tu vas gagner des rubis.
+378: [Name], tu sais qu'en[2]frappant les ennemis gelés[3]avec le marteau, tu peux[Waitkey][Scroll]trouver une flasque magique?
+379: Tra la la, la la, cherche[2]Sahasrahla!
+380: Oh, t'as trouvé Sahasrahla![2]Bravo, tra la la la la!
+381: Désolé, mais t'as pas l'air[2]d'avoir assez de [3]rubis.
+382: Cot, cot, cot. Quoi?[2]Tu m'as changé en humain.[3]J'peux parler![Waitkey][Scroll]C'est sûrement toi qui[Scroll]achales toujours mes amis.[Scroll]La girouette te regarde[Waitkey][Scroll]quand tu les fais fâcher![Scroll]Bon, cette forme humaine[Scroll]me va pas vraiment.[Waitkey][Scroll]Ahhh, j'aime mieux redevenir[Scroll]un poulet! Cot, cot, cot!
+383: Voyons voir si tu vas[2]t'enrichir ou t'appauvrir. Ouvre[3]un coffre pour 20 rubis et garde[Waitkey][Scroll]ce qu'il y a dedans.[Waitkey][Scroll]Tu prends une chance?[Scroll]> Oui.[Scroll]   Non, c'est trop risqué.[Choose]
+384: Parfait! Ouvre le coffre[2]que tu veux.
+385: Ouin... Pas de chance.[2]Reviens quand t'auras ramassé[3]plus de rubis.
+386: Voyons voir si tu vas[2]t'appauvrir ou t'enrichir. Pour[3]100 rubis, ouvre un coffre et[Waitkey][Scroll]garde ce qu'il y a dedans.[Waitkey][Scroll]Tu prends une chance?[Scroll]> Oui.[Scroll]   Non, c'est trop risqué.[Choose]
+387: Hé, [Name], désolé pour mon[2]gazon. Il est un peu long.[3]Merci d'être passé![Waitkey][Scroll]Ca fait du bien de jaser avec[Scroll]quelqu'un. J'vais te dire[Scroll]quelque chose[Waitkey][Scroll]d'intéressant. Y a un lac où[Scroll]les Zoras nagent, là où la[Scroll]rivière prend sa source, mais[Waitkey][Scroll]c'est pas facile à trouver.[Scroll]Le trésor des Zoras peut[Scroll]changer les gens enpoissons...
+388: Y avait un garçon dans ce[2]village qui pouvait parler[3]aux animaux avec sa[Waitkey][Scroll]flûte. Un oiseau le suivait[Scroll]partout, mais il est parti[Scroll]dans les montagnes et jamais[Waitkey][Scroll]revenu. Avec l'oiseau, il[Scroll]pouvait voyager partout au[Scroll]pays. La flûte avait un drôle[Waitkey][Scroll]de pouvoir...
+389: [Position 00][Speed 00]> Départ : maison de [Name][2]   Départ : sanctuaire[Choose2]
+390: [Position 00][Speed 00]>Départ:Maison de [Name][2]  Départ:Sanctuaire[3]  Départ:Grotte de la Montagne.[Choose3]
+391: [Speed 00]> Continuer.[2]   Sauvegarder et quitter.[Choose2]
+392: Bienvenue au champ au trésor.[2]Le but, c'est de creuser[3]autant de trous que possible en[Waitkey][Scroll]30 secondes. Tout ce que tu[Scroll]trouves, tu le gardes.[Scroll]Ca coûte juste 80 rubis.[Waitkey][Scroll]Ca te tente?[Scroll]> J'veux creuser.[Scroll]   Laisse faire![Choose]
+393: J'vais te prêter une[2]pelle. Prends-la et commence[3]à creuser! Appuie[Waitkey][Scroll]sur le bouton [Y].
+394: Bon, j'insiste pas.[2]Garde tes rubis et[3]reviens!
+395: Voilà! Le temps est écoulé.[2]C'est fini. Reviens[3]une autre fois! Salut!
+396: Reviens une autre fois![2]Je vais t'attendre.
+397: J'peux pas te l'expliquer,[2]mais j'ai pas le temps là.[3]Reviens un autre jour!

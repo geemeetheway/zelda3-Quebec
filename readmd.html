@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guide de jeu — Zelda3</title>
+  <style>
+    :root { color-scheme: dark; --bg:#111820; --panel:#1b2630; --ink:#edf3f5; --muted:#aab9c2; --accent:#8dde9b; --line:#34434e; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,sans-serif; }
+    header { position:sticky; top:0; background:#111820ed; border-bottom:1px solid var(--line); padding:1rem max(1rem,calc((100% - 900px)/2)); backdrop-filter:blur(8px); }
+    .bar { display:flex; gap:.7rem; align-items:center; flex-wrap:wrap; }
+    h1 { font-size:1.35rem; margin:0 auto 0 0; }
+    input,button { border:1px solid var(--line); border-radius:.5rem; padding:.55rem .75rem; background:var(--panel); color:var(--ink); font:inherit; }
+    input { min-width:14rem; flex:1; }
+    button { cursor:pointer; } button[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); }
+    main { max-width:900px; margin:1.5rem auto; padding:0 1rem 3rem; }
+    details { background:var(--panel); border:1px solid var(--line); border-radius:.7rem; margin:.8rem 0; padding:.8rem 1rem; }
+    summary { cursor:pointer; font-weight:700; color:var(--accent); }
+    p { margin:.75rem 0 0; } kbd { background:#0c1116; border:1px solid #52616c; border-radius:.3rem; padding:.1rem .35rem; white-space:nowrap; }
+    .tip { color:var(--muted); } .empty { display:none; color:var(--muted); }
+    @media(max-width:600px) { header { position:static; } h1 { width:100%; } input { min-width:100%; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <h1 data-fr="Guide de jeu — Zelda3" data-en="Zelda3 Player Guide">Guide de jeu — Zelda3</h1>
+      <input id="search" type="search" placeholder="Rechercher dans le guide" aria-label="Rechercher">
+      <button id="fr" aria-pressed="true">Français</button>
+      <button id="en" aria-pressed="false">English</button>
+    </div>
+  </header>
+  <main id="guide">
+    <p class="empty" id="empty" data-fr="Aucune rubrique correspondante." data-en="No matching section.">Aucune rubrique correspondante.</p>
+    <details open>
+      <summary data-fr="Ouvrir le menu graphique" data-en="Open the graphics menu">Ouvrir le menu graphique</summary>
+      <p data-fr="Appuyez sur Échap au clavier ou cliquez sur le stick gauche (L3) pour ouvrir le menu. Le jeu se met en pause. Utilisez les flèches et Entrée au clavier, ou la croix directionnelle et A avec une manette. Échap ou B revient à la page précédente; depuis la page principale, cela ferme le menu."
+         data-en="Press Escape on the keyboard or click the left stick (L3) to open the menu. The game pauses. Use the arrow keys and Enter, or the controller D-pad and A. Escape or B returns to the previous page; from the main page it closes the menu.">Appuyez sur Échap au clavier ou cliquez sur le stick gauche (L3) pour ouvrir le menu. Le jeu se met en pause. Utilisez les flèches et Entrée au clavier, ou la croix directionnelle et A avec une manette. Échap ou B revient à la page précédente; depuis la page principale, cela ferme le menu.</p>
+    </details>
+    <details>
+      <summary data-fr="Choix de la langue" data-en="Choose a language">Choix de la langue</summary>
+      <p data-fr="Au lancement, choisissez English, Français (France), Québécois familier, Beauce (slang) ou Québécois (sacres). Le dernier choix est présélectionné au prochain démarrage; vous pouvez en choisir un autre chaque fois. La version avec sacres emploie des jurons québécois selon leur rôle dans la phrase."
+         data-en="At startup, choose English, Français (France), Familiar Quebec French, Beauce Slang, or Quebec French with sacres. Your last choice is preselected next time, and you can change it on every launch. The sacres edition uses Quebec swear words according to their role in each sentence.">Au lancement, choisissez English, Français (France), Québécois familier, Beauce (slang) ou Québécois (sacres). Le dernier choix est présélectionné au prochain démarrage; vous pouvez en choisir un autre chaque fois. La version avec sacres emploie des jurons québécois selon leur rôle dans la phrase.</p>
+    </details>
+    <details>
+      <summary data-fr="Image et affichage" data-en="Picture and display">Image et affichage</summary>
+      <p data-fr="Le menu principal permet d’activer le HUD large, l’éclairage pixel par pixel, les animations d’environnement, les ombres et repères de hauteur, et l’échelle entière. Les changements sont enregistrés automatiquement dans <code>zelda3.user.ini</code>. Le HUD personnalisable permet d’afficher la vie, la magie, les rubis et les clés, puis de placer ces informations en haut ou en bas."
+         data-en="The main page toggles the widescreen HUD, pixel lighting, environment animations, shadows and height cues, and integer scaling. Changes are saved automatically to <code>zelda3.user.ini</code>. HUD settings control health, magic, rupees, keys, and whether the information appears at the top or bottom.">Le menu principal permet d’activer le HUD large, l’éclairage pixel par pixel, les animations d’environnement, les ombres et repères de hauteur, et l’échelle entière. Les changements sont enregistrés automatiquement dans <code>zelda3.user.ini</code>. Le HUD personnalisable permet d’afficher la vie, la magie, les rubis et les clés, puis de placer ces informations en haut ou en bas.</p>
+    </details>
+    <details>
+      <summary data-fr="Packs de textures HD" data-en="HD texture packs">Packs de textures HD</summary>
+      <p data-fr="Ouvrez Packs textures HD depuis le menu graphique. Les sous-dossiers valides de <code>hd_textures/</code> sont détectés automatiquement; <code>catalog.ini</code> est facultatif et sert à définir l’ordre. Un pack fournit un <code>manifest.ini</code> avec son nom, une description ou un aperçu facultatifs (PNG 96 × 54), et des entrées <code>Tile0</code> à <code>Tile255</code> dans <code>[Mode7]</code>. Les tuiles doivent mesurer 32 × 32 pixels. Consultez <code>hd_textures/README.md</code>. Aucun visuel de remplacement n’est fourni avec le jeu. Si le rendu amélioré est désactivé, redémarrez après la sélection pour activer les textures 4×."
+         data-en="Open HD Texture Packs from the graphics menu. Valid subfolders in <code>hd_textures/</code> are discovered automatically; <code>catalog.ini</code> is optional and controls ordering. A pack has a <code>manifest.ini</code> with a name, optional description or preview (96 × 54 PNG), and <code>Tile0</code> through <code>Tile255</code> entries in <code>[Mode7]</code>. Tile images must be 32 × 32 pixels. See <code>hd_textures/README.md</code>. The game does not include replacement artwork. If enhanced rendering is disabled, restart after selection to activate the 4× textures.">Ouvrez Packs textures HD depuis le menu graphique. Les sous-dossiers valides de <code>hd_textures/</code> sont détectés automatiquement; <code>catalog.ini</code> est facultatif et sert à définir l’ordre. Un pack fournit un <code>manifest.ini</code> avec son nom, une description ou un aperçu facultatifs (PNG 96 × 54), et des entrées <code>Tile0</code> à <code>Tile255</code> dans <code>[Mode7]</code>. Les tuiles doivent mesurer 32 × 32 pixels. Consultez <code>hd_textures/README.md</code>. Aucun visuel de remplacement n’est fourni avec le jeu. Si le rendu amélioré est désactivé, redémarrez après la sélection pour activer les textures 4×.</p>
+    </details>
+    <details>
+      <summary data-fr="Mode photo" data-en="Photo mode">Mode photo</summary>
+      <p data-fr="Ouvrez Mode photo pour figer l’image. Haut et bas choisissent le réglage; gauche et droite modifient le zoom (1× à 4×) ou le cadrage X/Y. Masquer le HUD retire les informations ajoutées par le fork. Entrée ou Impr. écran enregistre l’image sans le menu dans <code>screenshots/</code>, en BMP net sans filtre."
+         data-en="Open Photo Mode to freeze the frame. Up and Down select a setting; Left and Right change zoom (1× to 4×) or X/Y framing. Hide HUD removes the extra information added by this fork. Enter or Print Screen saves a crisp, unfiltered BMP without the menu in <code>screenshots/</code>.">Ouvrez Mode photo pour figer l’image. Haut et bas choisissent le réglage; gauche et droite modifient le zoom (1× à 4×) ou le cadrage X/Y. Masquer le HUD retire les informations ajoutées par le fork. Entrée ou Impr. écran enregistre l’image sans le menu dans <code>screenshots/</code>, en BMP net sans filtre.</p>
+    </details>
+    <details>
+      <summary data-fr="Atlas et fantôme de replay" data-en="Exploration atlas and replay ghost">Atlas et fantôme de replay</summary>
+      <p data-fr="L’atlas colore uniquement les écrans extérieurs déjà visités. Gauche ou droite bascule entre les deux mondes. Appuyez deux fois sur <kbd>C</kbd> ou sur X pour effacer la carte avec confirmation. L’exploration est gardée dans <code>user_data/extras.dat</code>. Dans Outils et défis, activez le fantôme pour voir une courte trace récente de Link; cette trace reste en mémoire pendant la session."
+         data-en="The atlas marks only overworld screens you have visited. Left or Right switches between the two worlds. Press <kbd>C</kbd> or controller X twice to confirm clearing the map. Exploration is stored in <code>user_data/extras.dat</code>. In Tools and Challenges, enable the ghost to see Link’s recent path; the trail stays in memory for the current session.">L’atlas colore uniquement les écrans extérieurs déjà visités. Gauche ou droite bascule entre les deux mondes. Appuyez deux fois sur <kbd>C</kbd> ou sur X pour effacer la carte avec confirmation. L’exploration est gardée dans <code>user_data/extras.dat</code>. Dans Outils et défis, activez le fantôme pour voir une courte trace récente de Link; cette trace reste en mémoire pendant la session.</p>
+    </details>
+    <details>
+      <summary data-fr="Entraînement, caméra et accessibilité" data-en="Practice, camera, and accessibility">Entraînement, caméra et accessibilité</summary>
+      <p data-fr="Outils et défis permet de créer ou restaurer un checkpoint du laboratoire de boss dans <code>saves/boss-lab.sav</code>, de choisir Standard, Haut contraste ou Flash réduit, et d’ajuster le focus caméra avec gauche/droite. Le cadrage reste dans l’espace permis par la pièce ou la zone; choisissez Reset focus caméra pour revenir au centre. Le défi local suit temps, morts, écrans visités et rubis maximum. Les cibles 20 écrans, moins de 10 minutes et zéro mort sont réglables séparément. Le record conserve le meilleur parcours avec les trois cibles activées; le reset du défi demande une seconde confirmation."
+         data-en="Tools and Challenges can save or restore the boss-lab checkpoint at <code>saves/boss-lab.sav</code>, select Standard, High Contrast, or Low Flash, and adjust camera framing with Left/Right. Framing stays within the room or area bounds; choose Reset Camera Focus to center it again. The local challenge tracks time, deaths, visited screens, and peak rupees. The 20-screen, under-10-minute, and no-death goals can be enabled separately. The record keeps the best run with all three goals enabled; resetting the challenge requires a second confirmation.">Outils et défis permet de créer ou restaurer un checkpoint du laboratoire de boss dans <code>saves/boss-lab.sav</code>, de choisir Standard, Haut contraste ou Flash réduit, et d’ajuster le focus caméra avec gauche/droite. Le cadrage reste dans l’espace permis par la pièce ou la zone; choisissez Reset focus caméra pour revenir au centre. Le défi local suit temps, morts, écrans visités et rubis maximum. Les cibles 20 écrans, moins de 10 minutes et zéro mort sont réglables séparément. Le record conserve le meilleur parcours avec les trois cibles activées; le reset du défi demande une seconde confirmation.</p>
+    </details>
+    <details>
+      <summary data-fr="Noms et historique des sauvegardes" data-en="Save labels and history">Noms et historique des sauvegardes</summary>
+      <p data-fr="Dans le gestionnaire, sélectionnez un emplacement puis appuyez sur <kbd>F2</kbd> pour saisir un nom (24 caractères ASCII maximum) et sur Entrée pour l’enregistrer. Avant chaque écrasement, le jeu conserve jusqu’à trois anciennes versions en <code>saves/saveN.sav.bak1</code> à <code>bak3</code>. Appuyez sur <kbd>R</kbd> au clavier ou Y sur une manette pour restaurer la plus récente; l’état courant est alors lui aussi sauvegardé dans l’historique."
+         data-en="In the save manager, select a slot and press <kbd>F2</kbd> to enter a name (up to 24 ASCII characters), then Enter to save it. Before each overwrite, the game keeps up to three previous versions at <code>saves/saveN.sav.bak1</code> through <code>bak3</code>. Press <kbd>R</kbd> or controller Y to restore the newest backup; the current state is also added to the history first.">Dans le gestionnaire, sélectionnez un emplacement puis appuyez sur <kbd>F2</kbd> pour saisir un nom (24 caractères ASCII maximum) et sur Entrée pour l’enregistrer. Avant chaque écrasement, le jeu conserve jusqu’à trois anciennes versions en <code>saves/saveN.sav.bak1</code> à <code>bak3</code>. Appuyez sur <kbd>R</kbd> au clavier ou Y sur une manette pour restaurer la plus récente; l’état courant est alors lui aussi sauvegardé dans l’historique.</p>
+    </details>
+    <details>
+      <summary data-fr="Sauvegardes et retours rapides" data-en="Saves and quick rewind">Sauvegardes et retours rapides</summary>
+      <p data-fr="Le gestionnaire propose vingt emplacements. Sélectionnez une entrée pour charger; utilisez Maj+Entrée au clavier ou X sur la manette pour sauvegarder. Un emplacement déjà utilisé demande une seconde confirmation. Les sauvegardes faites dans ce menu reçoivent un petit aperçu. Raccourcis: <kbd>Ctrl+S</kbd> sauvegarde l’emplacement 11, <kbd>Ctrl+L</kbd> le charge et <kbd>Retour arrière</kbd> revient d’environ un quart de seconde."
+         data-en="The save manager has twenty slots. Select a slot and press Enter to load; press Shift+Enter or controller X to save. Saving over an occupied slot requires a second confirmation. Saves created in this menu get a small preview. Shortcuts: <kbd>Ctrl+S</kbd> saves slot 11, <kbd>Ctrl+L</kbd> loads it, and <kbd>Backspace</kbd> rewinds about a quarter second.">Le gestionnaire propose vingt emplacements. Sélectionnez une entrée pour charger; utilisez Maj+Entrée au clavier ou X sur la manette pour sauvegarder. Un emplacement déjà utilisé demande une seconde confirmation. Les sauvegardes faites dans ce menu reçoivent un petit aperçu. Raccourcis: <kbd>Ctrl+S</kbd> sauvegarde l’emplacement 11, <kbd>Ctrl+L</kbd> le charge et <kbd>Retour arrière</kbd> revient d’environ un quart de seconde.</p>
+    </details>
+    <details>
+      <summary data-fr="Captures d’écran" data-en="Screenshots">Captures d’écran</summary>
+      <p data-fr="Appuyez sur <kbd>Impr. écran</kbd> pour enregistrer l’image affichée en BMP. Les fichiers sont créés dans le dossier <code>screenshots/</code> avec un nom horodaté. La capture standard inclut le HUD et les effets; en mode photo, elle est faite sans le menu."
+         data-en="Press <kbd>Print Screen</kbd> to save the displayed frame as a BMP. Files go into <code>screenshots/</code> with a timestamped name. Standard captures include the HUD and effects; Photo Mode captures omit the menu.">Appuyez sur <kbd>Impr. écran</kbd> pour enregistrer l’image affichée en BMP. Les fichiers sont créés dans le dossier <code>screenshots/</code> avec un nom horodaté. La capture standard inclut le HUD et les effets; en mode photo, elle est faite sans le menu.</p>
+    </details>
+    <details>
+      <summary data-fr="Remapper les commandes" data-en="Remap controls">Remapper les commandes</summary>
+      <p data-fr="Ouvrez « Remapper commandes », sélectionnez une action puis appuyez sur Entrée et sur la nouvelle touche. Avec une manette, appuyez sur A puis sur le bouton à affecter. Échap annule la saisie. Pour lancer un remappage clavier depuis une manette, sélectionnez une action et appuyez sur X, puis sur la touche du clavier. Les conflits sont refusés et les nouvelles affectations sont mémorisées."
+         data-en="Open Remap Controls, select an action, press Enter, then press the new key. With a controller, press A and then the button to assign. Escape cancels capture. To start keyboard capture while navigating with a controller, select an action and press X, then press a keyboard key. Conflicting bindings are rejected and accepted changes are remembered.">Ouvrez « Remapper commandes », sélectionnez une action puis appuyez sur Entrée et sur la nouvelle touche. Avec une manette, appuyez sur A puis sur le bouton à affecter. Échap annule la saisie. Pour lancer un remappage clavier depuis une manette, sélectionnez une action et appuyez sur X, puis sur la touche du clavier. Les conflits sont refusés et les nouvelles affectations sont mémorisées.</p>
+    </details>
+    <details>
+      <summary data-fr="Statistiques et avance image par image" data-en="Render stats and frame advance">Statistiques et avance image par image</summary>
+      <p data-fr="Appuyez sur <kbd>F</kbd> pour alterner entre aucun affichage, les FPS, les détails de rendu (temps de trame, résolution interne, backend et disponibilité du Mode 7 GPU), puis le graphique de fluidité. Celui-ci montre jusqu’à 120 intervalles, leur moyenne, le maximum et la cible de 16,7 ms. Pour avancer d’une seule image, mettez le jeu en pause, fermez le menu, puis appuyez sur <kbd>.</kbd> au clavier ou cliquez sur R3. Le jeu reste en pause après l’image."
+         data-en="Press <kbd>F</kbd> to cycle through off, FPS, detailed rendering information (frame time, internal resolution, backend, and GPU Mode 7 availability), then the frame-pacing graph. The graph shows up to 120 intervals, their average, maximum, and the 16.7 ms target. To advance exactly one frame, pause the game, close the menu, then press <kbd>.</kbd> or click R3. The game stays paused afterward.">Appuyez sur <kbd>F</kbd> pour alterner entre aucun affichage, les FPS, les détails de rendu (temps de trame, résolution interne, backend et disponibilité du Mode 7 GPU), puis le graphique de fluidité. Celui-ci montre jusqu’à 120 intervalles, leur moyenne, le maximum et la cible de 16,7 ms. Pour avancer d’une seule image, mettez le jeu en pause, fermez le menu, puis appuyez sur <kbd>.</kbd> au clavier ou cliquez sur R3. Le jeu reste en pause après l’image.</p>
+    </details>
+    <p class="tip" data-fr="Ce guide est autonome : il fonctionne hors ligne et ne charge aucune ressource externe." data-en="This guide is self-contained, works offline, and loads no external resources.">Ce guide est autonome : il fonctionne hors ligne et ne charge aucune ressource externe.</p>
+  </main>
+  <script>
+    const buttons = { fr: document.getElementById('fr'), en: document.getElementById('en') };
+    let language = 'fr';
+    function setLanguage(next) {
+      language = next;
+      document.documentElement.lang = next;
+      document.querySelectorAll('[data-' + next + ']').forEach(el => {
+        el.innerHTML = el.getAttribute('data-' + next);
+      });
+      document.getElementById('search').placeholder = next === 'fr' ? 'Rechercher dans le guide' : 'Search this guide';
+      document.getElementById('search').setAttribute('aria-label', next === 'fr' ? 'Rechercher' : 'Search');
+      buttons.fr.setAttribute('aria-pressed', String(next === 'fr'));
+      buttons.en.setAttribute('aria-pressed', String(next === 'en'));
+      filterSections();
+    }
+    function filterSections() {
+      const query = document.getElementById('search').value.trim().toLocaleLowerCase(language);
+      let visible = 0;
+      document.querySelectorAll('#guide details').forEach(section => {
+        const text = section.textContent.toLocaleLowerCase(language);
+        section.hidden = !!query && !text.includes(query);
+        if (!section.hidden) visible++;
+      });
+      document.getElementById('empty').style.display = visible ? 'none' : 'block';
+    }
+    buttons.fr.addEventListener('click', () => setLanguage('fr'));
+    buttons.en.addEventListener('click', () => setLanguage('en'));
+    document.getElementById('search').addEventListener('input', filterSections);
+  </script>
+</body>
+</html>

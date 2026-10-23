@@ -388,11 +388,23 @@ class LangFR_C(LangEU):
   dictionary = kTextDictionary_FR
   rom_addrs = [0x9c8000, 0x8CF150]
 
+class LangFR_BEAUCE(LangEU):
+  alphabet = kTextAlphabet_FR
+  dictionary = kTextDictionary_FR
+  rom_addrs = [0x9c8000, 0x8CF150]
+
+class LangFR_CA_SACRES(LangEU):
+  alphabet = kTextAlphabet_FR
+  dictionary = kTextDictionary_FR
+  rom_addrs = [0x9c8000, 0x8CF150]
+
 kLanguages = {
   'us' : LangUS(),
   'de' : LangDE(),
   'fr' : LangFR(),
   'fr-c' : LangFR_C(),
+  'fr-beauce' : LangFR_BEAUCE(),
+  'fr-ca-sacres' : LangFR_CA_SACRES(),
   'en' : LangEN(),
   'es' : LangES(),
   'pl' : LangPL(),

@@ -122,19 +122,23 @@ def print_dialogue(args):
   from text_compression import dialogue_filename, kLanguages
 
   languages = ['us']
+  dialogue_files = {'us': dialogue_filename('us')}
   if args.languages:
     for a in args.languages.split(','):
       if a in languages or a not in kLanguages:
         raise Exception(f'Language {a} is not valid')
       name = dialogue_filename(a)
+      if a in ('fr-c', 'fr-beauce', 'fr-ca-sacres'):
+        name = os.path.join('..', 'localization', name)
       if not os.path.exists(name):
         raise Exception(f'{name} not found. You need to extract it with --extract-dialogue using the ROM of that language.')
       languages.append(a)
+      dialogue_files[a] = name
 
   all_langs, all_fonts, mappings = [], [], []
   for i, lang in enumerate(languages):
     dict_packed = pack_arrays(text_compression.encode_dictionary(lang))
-    dialogue_packed = pack_arrays(compress_dialogue(dialogue_filename(lang), lang))
+    dialogue_packed = pack_arrays(compress_dialogue(dialogue_files[lang], lang))
     all_langs.append(pack_arrays([dict_packed, dialogue_packed]))
     font_data, font_width = sprite_sheets.encode_font_from_png(lang)
     all_fonts.append(pack_arrays([font_data, font_width]))

@@ -49,6 +49,10 @@ void ZeldaReset(bool preserve_sram);
 void ZeldaDrawPpuFrame(uint8 *pixel_buffer, size_t pitch, uint32 render_flags);
 void ZeldaRunFrameInternal(uint16 input, int run_what);
 bool ZeldaRunFrame(int input_state);
+void ZeldaRewindReset();
+void ZeldaRewindCaptureFrame();
+bool ZeldaRewindStep();
+void ZeldaSetWantedFeatures(uint32 features);
 void LoadSongBank(const uint8 *p);
 void ZeldaApuLock();
 void ZeldaApuUnlock();
@@ -65,7 +69,7 @@ enum {
   kSaveLoad_Replay = 2,
 };
 
-void SaveLoadSlot(int cmd, int which);
+bool SaveLoadSlot(int cmd, int which);
 void ZeldaWriteSram();
 void ZeldaReadSram();
 

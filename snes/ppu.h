@@ -34,6 +34,13 @@ typedef struct PpuPixelPrioBufs {
   PpuZbufType data[kPpuXPixels];
 } PpuPixelPrioBufs;
 
+typedef struct PpuMode7GpuLine {
+  int32_t m0[4];
+  int32_t m1, m2;
+  int32_t xCenter, yCenter, clippedH, clippedV;
+  int32_t extraLeftCur, extraRightCur, halfColor, active;
+} PpuMode7GpuLine;
+
 enum {
   kPpuRenderFlags_NewRenderer = 1,
   // Render mode7 upsampled by 4x4
@@ -42,6 +49,8 @@ enum {
   kPpuRenderFlags_Height240 = 4,
   // Disable sprite render limits
   kPpuRenderFlags_NoSpriteLimits = 8,
+  // Render enhanced Mode 7 through the OpenGL backend
+  kPpuRenderFlags_GpuMode7 = 16,
 };
 
 
@@ -52,7 +61,8 @@ struct Ppu {
   uint8_t renderFlags;
   uint32_t renderPitch;
   uint8_t *renderBuffer;
-  uint8_t extraLeftCur, extraRightCur, extraLeftRight, extraBottomCur;
+  uint16_t extraLeftCur, extraRightCur, extraLeftRight;
+  uint8_t extraBottomCur;
   float mode7PerspectiveLow, mode7PerspectiveHigh;
 
   // TMW / TSW etc
@@ -122,9 +132,15 @@ struct Ppu {
   uint16_t cgram[0x100];
   uint8_t mosaicModulo[kPpuXPixels];
   uint32_t colorMapRgb[256];
+  // Optional 32x32 ARGB8888 replacements for the 256 Mode 7 character tiles.
+  // The texture pack owns these buffers; the PPU only samples them.
+  const uint32_t *hdMode7Textures[256];
   PpuPixelPrioBufs bgBuffers[2];
   PpuPixelPrioBufs objBuffer;
   uint16_t vram[0x8000];
+  int mode7GpuLineCount;
+  PpuMode7GpuLine mode7GpuLines[240];
+  uint8_t mode7GpuSprites[240 * kPpuXPixels];
 };
 
 Ppu* ppu_init();
@@ -142,5 +158,7 @@ int PpuGetCurrentRenderScale(Ppu *ppu, uint32_t render_flags);
 
 void PpuSetMode7PerspectiveCorrection(Ppu *ppu, int low, int high);
 void PpuSetExtraSideSpace(Ppu *ppu, int left, int right, int bottom);
+void PpuClearMode7TextureTiles(Ppu *ppu);
+void PpuSetMode7TextureTile(Ppu *ppu, int tile, const uint32_t *argb_pixels);
 
 #endif  // ZELDA3_SNES_PPU_H_

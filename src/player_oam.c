@@ -1055,10 +1055,15 @@ continue_after_set:
           uint16 td = kLinkShadows_Chardata[shadow_idx*2] & ~0x3000 | oam_priority_value_2;
           if (!link_palette_bits_of_oam)
             td = td & ~0xe00 | 0x600;
+          int shadow_inset = 0;
+          if (enhanced_features0 & kFeatures0_HeightCues) {
+            uint8 shadow_height = ((int16)link_z_coord >= 0 || BYTE(link_z_coord) < 0xf0) ? BYTE(link_z_coord) : 0;
+            shadow_inset = IntMin(shadow_height >> 4, 2);
+          }
           WORD(oam_buf[oam_pos+0].charnum) = td;
           WORD(oam_buf[oam_pos+1].charnum) = td & ~0xC000 | 0x4000;
-          WORD(oam_buf[oam_pos+0].x) = (uint8)oam_x | oam_y << 8;
-          WORD(oam_buf[oam_pos+1].x) = (uint8)(oam_x + 8) | oam_y << 8;
+          WORD(oam_buf[oam_pos+0].x) = (uint8)(oam_x + shadow_inset) | oam_y << 8;
+          WORD(oam_buf[oam_pos+1].x) = (uint8)(oam_x + 8 - shadow_inset) | oam_y << 8;
           bytewise_extended_oam[oam_pos+0] = 0;
           bytewise_extended_oam[oam_pos+1] = 0;
         }

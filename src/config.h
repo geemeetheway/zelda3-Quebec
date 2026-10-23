@@ -34,6 +34,18 @@ enum {
   kKeys_ToggleRenderer,
   kKeys_VolumeUp,
   kKeys_VolumeDown,
+  kKeys_ReloadShader,
+  kKeys_ToggleShader,
+  kKeys_ShaderParamPrevious,
+  kKeys_ShaderParamNext,
+  kKeys_ShaderParamDecrease,
+  kKeys_ShaderParamIncrease,
+  kKeys_GraphicsMenu,
+  kKeys_QuickSave,
+  kKeys_QuickLoad,
+  kKeys_Rewind,
+  kKeys_Screenshot,
+  kKeys_FrameAdvance,
   kKeys_Total,
 };
 
@@ -50,6 +62,7 @@ typedef struct Config {
   bool enhanced_mode7;
   bool new_renderer;
   bool ignore_aspect_ratio;
+  bool integer_scaling;
   uint8 fullscreen;
   uint8 window_scale;
   bool enable_audio;
@@ -59,10 +72,26 @@ typedef struct Config {
   uint8 audio_channels;
   uint16 audio_samples;
   bool autosave;
-  uint8 extended_aspect_ratio;
+  uint16 extended_aspect_ratio;
   bool extend_y;
   bool no_sprite_limits;
   bool display_perf_title;
+  bool widescreen_hud;
+  bool pixel_lighting;
+  bool environment_animations;
+  bool height_cues;
+  bool hud_show_health;
+  bool hud_show_magic;
+  bool hud_show_rupees;
+  bool hud_show_keys;
+  bool hud_position_bottom;
+  uint8 accessibility_profile;
+  int16 camera_bias;
+  int16 hd_texture_pack_index;
+  char hd_texture_pack_folder[64];
+  bool ghost_trail_enabled;
+  bool challenge_time_limit_enabled;
+  bool challenge_no_death_enabled;
   uint8 enable_msu;
   bool resume_msu;
   bool disable_frame_delay;
@@ -108,3 +137,9 @@ extern Config g_config;
 void ParseConfigFile(const char *filename);
 int FindCmdForSdlKey(SDL_Keycode code, SDL_Keymod mod);
 int FindCmdForGamepadButton(int button, uint32 modifiers);
+const char *Config_GetControlName(int index);
+const char *Config_GetControlKeyboardName(int index);
+const char *Config_GetControlGamepadName(int index);
+bool Config_SetControlKeyboard(int index, SDL_Keycode code, SDL_Keymod mod);
+bool Config_SetControlGamepad(int index, int button);
+bool Config_SaveUserSettings(void);
