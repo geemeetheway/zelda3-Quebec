@@ -3,8 +3,32 @@ name: Build
 on:
   push:
     branches:
-    - master
+      - master
+    paths-ignore:
+      - '*.md'
+      - 'docs/**/*.md'
+      - 'docs/**/*.mdx'
+      - 'docs/**/*.rst'
+      - 'docs/**/*.txt'
+      - 'docs/**/*.png'
+      - 'docs/**/*.jpg'
+      - 'docs/**/*.jpeg'
+      - 'docs/**/*.svg'
+      - 'docs/**/*.webp'
+      - 'docs/**/*.gif'
   pull_request:
+    paths-ignore:
+      - '*.md'
+      - 'docs/**/*.md'
+      - 'docs/**/*.mdx'
+      - 'docs/**/*.rst'
+      - 'docs/**/*.txt'
+      - 'docs/**/*.png'
+      - 'docs/**/*.jpg'
+      - 'docs/**/*.jpeg'
+      - 'docs/**/*.svg'
+      - 'docs/**/*.webp'
+      - 'docs/**/*.gif'
   workflow_dispatch:
 
 jobs:
